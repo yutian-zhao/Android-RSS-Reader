@@ -26,19 +26,44 @@ import java.net.URI;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    Uri rawUri;
+
+    private void showtypeURI() {
+        final EditText addWindow = new EditText(MainActivity.this);
+        AlertDialog.Builder inputDialog =
+                new AlertDialog.Builder(MainActivity.this);
+        inputDialog.setTitle("type Uri").setView(addWindow);
+        inputDialog.setPositiveButton("add",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        rawUri = Uri.parse(addWindow.getText().toString());
+                        // if rawUri is valid
+                        Toast.makeText(MainActivity.this,
+                                "add successfully",
+                                Toast.LENGTH_SHORT).show();
+                        // else
+                        Toast.makeText(MainActivity.this,
+                                "invalid Uri",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        
+
 
         FloatingActionButton add = (FloatingActionButton) findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                // link collection
+                showtypeURI();
             }
         });
 
