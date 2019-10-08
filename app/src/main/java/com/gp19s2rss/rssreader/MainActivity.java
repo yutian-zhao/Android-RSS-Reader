@@ -21,44 +21,60 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Uri rawUri;
+    Set<Uri> Subscribed_Uri = new HashSet<>();
 
     private void showtypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
         AlertDialog.Builder inputDialog =
                 new AlertDialog.Builder(MainActivity.this);
-        inputDialog.setTitle("type Uri").setView(addWindow);
-        inputDialog.setPositiveButton("add",
+        inputDialog.setTitle("Type the source link you want to read.").setView(addWindow);
+        inputDialog.setPositiveButton("Subscribe",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        rawUri = Uri.parse(addWindow.getText().toString());
-                        // if rawUri is valid
-                        Toast.makeText(MainActivity.this,
-                                "add successfully",
-                                Toast.LENGTH_SHORT).show();
-                        // else
-                        Toast.makeText(MainActivity.this,
-                                "invalid Uri",
-                                Toast.LENGTH_SHORT).show();
+//                        String uri_string = addWindow.getText().toString();
+                        if (pattern.matcher(addWindow.getText().toString()).matches()) {
+                            // The input is a valid link.
+                            rawUri = Uri.parse(addWindow.getText().toString());
+                            Subscribed_Uri.add(rawUri);
+                            Toast.makeText(MainActivity.this,
+                                    "Subscribe Successfully.",
+                                    Toast.LENGTH_SHORT).show();
+                            Valid_URI_Action(rawUri);
+                        } else {
+                            Toast.makeText(MainActivity.this,
+                                    "Invalid Uri.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }).show();
+    }
+
+
+    // Reaction to the valid uri input.
+    protected void Valid_URI_Action(Uri uri) {
+//        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+//        startActivity(intent);
+        //TODO: lunch a text box when detect a valid uri input
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        FloatingActionButton add = (FloatingActionButton) findViewById(R.id.add);
+        FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,19 +83,19 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -131,8 +147,12 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    // Using this Regular expression to check a string is a valid link or not.
+    Pattern pattern = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)" +
+            "(([A-Za-z0-9-~]+).)+" + "([A-Za-z0-9-~\\/])+$");
 }
