@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity
     protected void Valid_URI_Action(Uri uri) {
         //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         //startActivity(intent);
-        //TODO: lunch a text box when detect a valid uri input
     }
 
     @Override
