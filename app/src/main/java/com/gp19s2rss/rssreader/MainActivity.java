@@ -59,11 +59,15 @@ public class MainActivity extends AppCompatActivity
                             if (!Subscribed_Uri.contains(rawUri)) {
                                 Subscribed_Uri.add(rawUri);
                                 data.add(rawUri.toString());
+                                Toast.makeText(MainActivity.this,
+                                        "Subscribe Successfully.",
+                                        Toast.LENGTH_SHORT).show();
+                                Valid_URI_Action(rawUri);
+                            } else {
+                                Toast.makeText(MainActivity.this,
+                                        "Uri already exists.",
+                                        Toast.LENGTH_SHORT).show();
                             }
-                            Toast.makeText(MainActivity.this,
-                                    "Subscribe Successfully.",
-                                    Toast.LENGTH_SHORT).show();
-                            Valid_URI_Action(rawUri);
                         } else {
                             Toast.makeText(MainActivity.this,
                                     "Invalid Uri.",
