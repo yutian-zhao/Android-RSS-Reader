@@ -1,6 +1,8 @@
 package com.gp19s2rss.rssreader;
 
 import android.app.ListActivity;
+import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,11 +20,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,17 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     Uri rawUri;
     Set<Uri> Subscribed_Uri = new HashSet<>();
-    List<String> Sub_Uri = new ArrayList<>();
-
-    public class RSSList extends ListActivity{
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.content_main);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, Sub_Uri);
-            setListAdapter(adapter);
-        }
-    }
+    List<String> data = new ArrayList<>();
 
     private void showtypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
@@ -55,13 +52,13 @@ public class MainActivity extends AppCompatActivity
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                        String uri_string = addWindow.getText().toString();
+//                      TODO: String uri_string = addWindow.getText().toString();
                         if (pattern.matcher(addWindow.getText().toString()).matches()) {
                             // The input is a valid link.
                             rawUri = Uri.parse(addWindow.getText().toString());
                             if (!Subscribed_Uri.contains(rawUri)) {
                                 Subscribed_Uri.add(rawUri);
-                                Sub_Uri.add(rawUri.toString());
+                                data.add(rawUri.toString());
                             }
                             Toast.makeText(MainActivity.this,
                                     "Subscribe Successfully.",
@@ -91,6 +88,10 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // To represent items inside a list_Viewer
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, data);
+        ListView listView = (ListView) findViewById(R.id.list_view);
+        listView.setAdapter(adapter);
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
