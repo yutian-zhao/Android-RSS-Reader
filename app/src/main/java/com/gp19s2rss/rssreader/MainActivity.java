@@ -1,5 +1,6 @@
 package com.gp19s2rss.rssreader;
 
+import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,11 +18,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -30,6 +34,17 @@ public class MainActivity extends AppCompatActivity
 
     Uri rawUri;
     Set<Uri> Subscribed_Uri = new HashSet<>();
+    List<String> Sub_Uri = new ArrayList<>();
+
+    public class RSSList extends ListActivity{
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.content_main);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, Sub_Uri);
+            setListAdapter(adapter);
+        }
+    }
 
     private void showtypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
@@ -44,7 +59,10 @@ public class MainActivity extends AppCompatActivity
                         if (pattern.matcher(addWindow.getText().toString()).matches()) {
                             // The input is a valid link.
                             rawUri = Uri.parse(addWindow.getText().toString());
-                            Subscribed_Uri.add(rawUri);
+                            if (!Subscribed_Uri.contains(rawUri)) {
+                                Subscribed_Uri.add(rawUri);
+                                Sub_Uri.add(rawUri.toString());
+                            }
                             Toast.makeText(MainActivity.this,
                                     "Subscribe Successfully.",
                                     Toast.LENGTH_SHORT).show();
@@ -61,8 +79,8 @@ public class MainActivity extends AppCompatActivity
 
     // Reaction to the valid uri input.
     protected void Valid_URI_Action(Uri uri) {
-//        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-//        startActivity(intent);
+        //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        //startActivity(intent);
         //TODO: lunch a text box when detect a valid uri input
     }
 
