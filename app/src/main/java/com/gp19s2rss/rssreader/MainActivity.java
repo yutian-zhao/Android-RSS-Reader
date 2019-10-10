@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity
     // refresh
     // folder (icon)
 
+    // rust server
+    // transfer parse html to rich text (viewer)
+
     // (load)(icon)
     // sort arraylist of link class time(old/ new) feed name (unread/recently read/favourite) search
 
