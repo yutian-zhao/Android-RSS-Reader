@@ -21,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -52,10 +54,10 @@ public class MainActivity extends AppCompatActivity
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                      TODO: String uri_string = addWindow.getText().toString();
-                        if (pattern.matcher(addWindow.getText().toString()).matches()) {
+                        String uri_string = addWindow.getText().toString();
+                        if (pattern.matcher(uri_string).matches()) {
                             // The input is a valid link.
-                            rawUri = Uri.parse(addWindow.getText().toString());
+                            rawUri = Uri.parse(uri_string);
                             if (!Subscribed_Uri.contains(rawUri)) {
                                 Subscribed_Uri.add(rawUri);
                                 data.add(rawUri.toString());
@@ -106,6 +108,18 @@ public class MainActivity extends AppCompatActivity
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, data);
         ListView listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
+        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Uri targetUri = Uri.parse(data.get(position));
+                //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
+                //startActivity(intent);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, ReaderActivity.class);
+                startActivityForResult(intent, 0);
+            }
+        };
+        listView.setOnItemClickListener(clickListener);
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
