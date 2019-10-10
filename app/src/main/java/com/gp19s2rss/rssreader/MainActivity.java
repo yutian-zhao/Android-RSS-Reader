@@ -21,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -95,6 +97,15 @@ public class MainActivity extends AppCompatActivity
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, data);
         ListView listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
+        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Uri targetUri = Uri.parse(data.get(position));
+                Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
+                startActivity(intent);
+            }
+        };
+        listView.setOnItemClickListener(clickListener);
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
