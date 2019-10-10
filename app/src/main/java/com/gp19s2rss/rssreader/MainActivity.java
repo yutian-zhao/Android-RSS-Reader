@@ -77,6 +77,17 @@ public class MainActivity extends AppCompatActivity
                 }).show();
     }
 
+    // memory(rss array on top, favourite link xml/ link class array output) - nav - refresh - list
+    // valid
+    // list
+    // show
+    // refresh
+    // folder (icon)
+
+    // (load)(icon)
+    // sort arraylist of link class time(old/ new) feed name (unread/recently read/favourite) search
+
+    // add - folder - refresh
 
     // Reaction to the valid uri input.
     protected void Valid_URI_Action(Uri uri) {
@@ -112,7 +123,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this); // press
     }
 
     @Override
@@ -166,7 +177,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
             Uri uri = Uri.parse("https://www.baidu.com");
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent);
+            startActivity(intent); // usable
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

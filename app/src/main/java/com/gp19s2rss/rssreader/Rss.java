@@ -5,7 +5,7 @@ public class Rss {
     private String link;
     private String description;
     private int id;
-
+// channel, title, time (extracted image)
     public Rss(String tile, String link, String description, int id) {
         this.tile = tile;
         this.link = link;
