@@ -52,10 +52,10 @@ public class MainActivity extends AppCompatActivity
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-//                      TODO: String uri_string = addWindow.getText().toString();
-                        if (pattern.matcher(addWindow.getText().toString()).matches()) {
+                        String uri_string = addWindow.getText().toString();
+                        if (pattern.matcher(uri_string).matches()) {
                             // The input is a valid link.
-                            rawUri = Uri.parse(addWindow.getText().toString());
+                            rawUri = Uri.parse(uri_string);
                             if (!Subscribed_Uri.contains(rawUri)) {
                                 Subscribed_Uri.add(rawUri);
                                 data.add(rawUri.toString());
