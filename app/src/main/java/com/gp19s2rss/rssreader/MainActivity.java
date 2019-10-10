@@ -100,9 +100,12 @@ public class MainActivity extends AppCompatActivity
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Uri targetUri = Uri.parse(data.get(position));
-                Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
-                startActivity(intent);
+                //Uri targetUri = Uri.parse(data.get(position));
+                //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
+                //startActivity(intent);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, ReaderActivity.class);
+                startActivityForResult(intent, 0);
             }
         };
         listView.setOnItemClickListener(clickListener);
