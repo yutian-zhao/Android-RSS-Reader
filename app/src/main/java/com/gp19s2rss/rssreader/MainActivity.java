@@ -31,6 +31,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +47,25 @@ public class MainActivity extends AppCompatActivity
 
     Uri rawUri;
     Set<Uri> Subscribed_Uri = new HashSet<>();
-    List<String> data = new ArrayList<>();
+    ArrayList<String> links = new ArrayList<>();
+    static Context context;
+    static ArrayList<Item> items;
+
+    public ArrayList<String> loadLinks(String filename){
+        try {
+            File f= new File(filename);
+            if (f.exists() && f.canRead() && f.length() != 0) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+                links = (ArrayList<String>) ois.readObject();
+                ois.close();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        } catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return links;
+    }
 
     private void showtypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
@@ -60,7 +82,7 @@ public class MainActivity extends AppCompatActivity
                             rawUri = Uri.parse(uri_string);
                             if (!Subscribed_Uri.contains(rawUri)) {
                                 Subscribed_Uri.add(rawUri);
-                                data.add(rawUri.toString());
+                                links.add(rawUri.toString());
                                 Toast.makeText(MainActivity.this,
                                         "Subscribe Successfully.",
                                         Toast.LENGTH_SHORT).show();
@@ -106,15 +128,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context = getApplicationContext();
 
         // To represent items inside a list_Viewer
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, data);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, links);
         ListView listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(adapter);
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Uri targetUri = Uri.parse(data.get(position));
+                //Uri targetUri = Uri.parse(links.get(position));
                 //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
                 //startActivity(intent);
                 Intent intent = new Intent();
@@ -141,6 +164,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
+    }
+
+    public static Context getAppContext() {
+        return context;
     }
 
     @Override
