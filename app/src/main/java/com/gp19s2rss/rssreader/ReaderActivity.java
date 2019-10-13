@@ -1,11 +1,13 @@
 package com.gp19s2rss.rssreader;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 
 import java.util.HashSet;
@@ -19,6 +21,8 @@ public class ReaderActivity extends AppCompatActivity {
 
     Uri rawUri;
     Set<Uri> favorite_folder = new HashSet<>();
+
+    ReaderActivity(){};
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -39,6 +43,12 @@ public class ReaderActivity extends AppCompatActivity {
         Button share = findViewById(R.id.share);
         Button favorite = findViewById(R.id.favorite);
         Button unread = findViewById(R.id.unread);
+        WebView webView = (WebView) findViewById(R.id.webview);
+
+        // web view
+        Intent intent = getIntent();
+        String info = intent.getStringExtra("link");
+        webView.loadUrl(info);
 
         // Share operation
         share.setOnClickListener(new View.OnClickListener() {

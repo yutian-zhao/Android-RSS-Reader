@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.ListView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -25,7 +26,7 @@ public class Fetch extends AsyncTask<String, String, String> {
     protected void onPreExecute() {
         super.onPreExecute();
         progressDialog.setMessage("Loading");
-        progressDialog.show();
+//        progressDialog.show(MainActivity.class);
     }
 
     @Override

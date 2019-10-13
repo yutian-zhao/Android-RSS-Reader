@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -33,9 +34,12 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,16 +50,17 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Uri rawUri;
-    Set<Uri> Subscribed_Uri = new HashSet<>();
     ArrayList<String> links = new ArrayList<>();
     static Context context;
-    static ArrayList<Item> items;
+    static ArrayList<Item> items = new ArrayList<>();
+    ItemAdapter itemAdapter;
+    ListView listView;
 
     public ArrayList<String> loadLinks(String filename){
         try {
-            File f= new File(filename);
+            File f= new File(getExternalFilesDir(null), filename);
             if (f.exists() && f.canRead() && f.length() != 0) {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename));
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 links = (ArrayList<String>) ois.readObject();
                 ois.close();
             }
@@ -65,6 +70,17 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         return links;
+    }
+
+    public void saveLinks(String filename){
+        try{
+            File f= new File(getExternalFilesDir(null), filename);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(links);
+            oos.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     private void showtypeURI() {
@@ -80,12 +96,16 @@ public class MainActivity extends AppCompatActivity
                         if (pattern.matcher(uri_string).matches()) {
                             // The input is a valid link.
                             rawUri = Uri.parse(uri_string);
-                            if (!Subscribed_Uri.contains(rawUri)) {
-                                Subscribed_Uri.add(rawUri);
+                            if (!links.contains(rawUri.toString())) {
                                 links.add(rawUri.toString());
                                 Toast.makeText(MainActivity.this,
                                         "Subscribe Successfully.",
                                         Toast.LENGTH_SHORT).show();
+
+                                saveLinks("links.ser");
+                                refresh();
+                                itemAdapter = new ItemAdapter(MainActivity.this, R.layout.item, items);
+                                listView.setAdapter(itemAdapter);//
                                 Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
@@ -116,10 +136,24 @@ public class MainActivity extends AppCompatActivity
 
     // add - folder - refresh
 
+    //treat navigation drawer as listview(both clickable); setadapter throw null pointer exception; How to correctly implement BaseAdapter.notifyDataSetChanged() in Android; asynctask execute;
+
     // Reaction to the valid uri input.
     protected void Valid_URI_Action(Uri uri) {
         //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         //startActivity(intent);
+    }
+
+    public void refresh(){
+        links = loadLinks("links.ser");
+        Fetch fetchTask = new Fetch();
+        for (String s : links) {
+            fetchTask.execute(s);
+        }
+        for (Item i : items){
+            System.out.println(i.title);
+        }
+        itemAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -129,23 +163,32 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         context = getApplicationContext();
+        saveLinks("links.ser"); // clean
+        links = loadLinks("links.ser");
+        Fetch fetchTask = new Fetch();
+        for (String s : links) {
+            fetchTask.execute(s);
+        }
 
         // To represent items inside a list_Viewer
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, links);
-        ListView listView = (ListView) findViewById(R.id.list_view);
-        listView.setAdapter(adapter);
+        itemAdapter = new ItemAdapter(this, R.layout.item, items);
+        listView = (ListView) findViewById(R.id.list_view);
+        listView.setAdapter(itemAdapter);
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Uri targetUri = Uri.parse(links.get(position));
                 //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
                 //startActivity(intent);
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, ReaderActivity.class);
-                startActivityForResult(intent, 0);
+                String url = items.get(position).link;
+                Intent intent = new Intent(getAppContext(), ReaderActivity.class);
+                intent.putExtra("link",url);
+//                intent.setClass(MainActivity.this, ReaderActivity.class);
+                startActivity(intent);
             }
         };
         listView.setOnItemClickListener(clickListener);
+
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
