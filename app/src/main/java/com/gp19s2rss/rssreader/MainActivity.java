@@ -41,6 +41,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,31 +55,33 @@ public class MainActivity extends AppCompatActivity
     static Context context;
     static ArrayList<Item> items = new ArrayList<>();
     ItemAdapter itemAdapter;
+    ItemsAdapter itemsAdapter;
     ListView listView;
 
-    public ArrayList<String> loadLinks(String filename){
+
+    public ArrayList<String> loadLinks(String filename) {
         try {
-            File f= new File(getExternalFilesDir(null), filename);
+            File f = new File(getExternalFilesDir(null), filename);
             if (f.exists() && f.canRead() && f.length() != 0) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 links = (ArrayList<String>) ois.readObject();
                 ois.close();
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return links;
     }
 
-    public void saveLinks(String filename){
-        try{
-            File f= new File(getExternalFilesDir(null), filename);
+    public void saveLinks(String filename) {
+        try {
+            File f = new File(getExternalFilesDir(null), filename);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(links);
             oos.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -104,8 +107,8 @@ public class MainActivity extends AppCompatActivity
 
                                 saveLinks("links.ser");
                                 refresh();
-                                itemAdapter = new ItemAdapter(MainActivity.this, R.layout.item, items);
-                                listView.setAdapter(itemAdapter);//
+                                itemsAdapter = new ItemsAdapter(items, MainActivity.this);
+                                listView.setAdapter(itemsAdapter);//
                                 Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
@@ -144,13 +147,13 @@ public class MainActivity extends AppCompatActivity
         //startActivity(intent);
     }
 
-    public void refresh(){
+    public void refresh() {
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
         for (String s : links) {
             fetchTask.execute(s);
         }
-        for (Item i : items){
+        for (Item i : items) {
             System.out.println(i.title);
         }
         itemAdapter.notifyDataSetChanged();
@@ -170,10 +173,21 @@ public class MainActivity extends AppCompatActivity
             fetchTask.execute(s);
         }
 
-        // To represent items inside a list_Viewer
-        itemAdapter = new ItemAdapter(this, R.layout.item, items);
+
+        Item test = new Item();
+        test.channel = "aaaaaaaaaaaaaaaaaa";
+        test.date = new Date(1, 1, 1, 1, 1, 1);
+        test.description = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        test.title = "111";
+        items.add(test);
+
+
+        // To represent items by the new format inside the list_Viewer
+        itemsAdapter = new ItemsAdapter(items, MainActivity.this);
         listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(itemAdapter);
+
+        // Click link to show that page.
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -182,7 +196,7 @@ public class MainActivity extends AppCompatActivity
                 //startActivity(intent);
                 String url = items.get(position).link;
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
-                intent.putExtra("link",url);
+                intent.putExtra("link", url);
 //                intent.setClass(MainActivity.this, ReaderActivity.class);
                 startActivity(intent);
             }

@@ -29,11 +29,11 @@ public class ItemAdapter extends ArrayAdapter<Item> {
             LayoutInflater inflater = (LayoutInflater) c.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
             view = inflater.inflate(R.layout.item, null);
         }
-        ((TextView)view.findViewById(R.id.textView)).setText(items.get(position).title);
-        ((TextView)view.findViewById(R.id.textView2)).setText(items.get(position).description);
-        ((TextView)view.findViewById(R.id.textView3)).setText(items.get(position).channel);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
-        ((TextView)view.findViewById(R.id.textView4)).setText(dateFormat.format(items.get(position).date));
+//        ((TextView)view.findViewById(R.id.textView)).setText(items.get(position).title);
+//        ((TextView)view.findViewById(R.id.textView2)).setText(items.get(position).description);
+//        ((TextView)view.findViewById(R.id.textView3)).setText(items.get(position).channel);
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
+//        ((TextView)view.findViewById(R.id.textView4)).setText(dateFormat.format(items.get(position).date));
         return view;
     }
 }
