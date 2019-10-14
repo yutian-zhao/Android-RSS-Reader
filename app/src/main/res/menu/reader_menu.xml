@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/id_unread_item"
-        android:title="unread"/>
-    <item android:id="@+id/id_favorite_item"
-        android:title="favorite"/>
-    <item android:id="@+id/id_share_item"
-        android:title="share"/>
+    <item
+        android:id="@+id/id_unread_item"
+        android:title="unread" />
+    <item
+        android:id="@+id/id_favorite_item"
+        android:title="favorite" />
+    <item
+        android:id="@+id/id_share_item"
+        android:title="share" />
 </menu>
