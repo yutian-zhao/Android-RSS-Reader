@@ -1,13 +1,12 @@
+// reference:https://blog.csdn.net/gh8609123/article/details/53495670
+// CC BY-SA 4.0
+
 package com.gp19s2rss.rssreader;
 
 import android.net.Uri;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,11 +14,10 @@ import java.util.Set;
 import static android.widget.Toast.*;
 
 public class ReaderActivity extends AppCompatActivity {
-// reference:https://blog.csdn.net/gh8609123/article/details/53495670
-// CC BY-SA 4.0
 
     Uri rawUri;
     Set<Uri> favorite_folder = new HashSet<>();
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -52,11 +50,7 @@ public class ReaderActivity extends AppCompatActivity {
                 break;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
-
-          return true;
+        return true;
     }
-
-
 }
