@@ -1,7 +1,11 @@
 package com.gp19s2rss.rssreader;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.ListView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -13,8 +17,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
-public class Fetch extends AsyncTask<String, String, String> {
+public class Fetch extends AsyncTask<String, Integer, String> {
 
     ProgressDialog progressDialog = new ProgressDialog(MainActivity.getAppContext());
 
@@ -27,59 +32,74 @@ public class Fetch extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        String link = strings[0];
-        try {
-            URL url = new URL(link);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            if (connection.getResponseCode() == 200) {
-                InputStream response = connection.getInputStream();
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(true);
-                XmlPullParser xpp = factory.newPullParser();
-                xpp.setInput(response, "UTF-8");
-                Boolean insideItem = false;
-                int eventType = xpp.getEventType();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (insideItem || xpp.getName().equalsIgnoreCase("item")) {
-                            insideItem = true;
-                            Item item = new Item();
-                            item.channel = link;
-                            if (xpp.getName().equalsIgnoreCase("title")) {
-                                item.title = xpp.nextText();
+        Item item = new Item();
+        for (String link : strings) {
+            try {
+                URL url = new URL(link);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                if (connection.getResponseCode() == 200) {
+                    InputStream response = connection.getInputStream();
+                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                    factory.setNamespaceAware(false);
+                    XmlPullParser xpp = factory.newPullParser();
+                    xpp.setInput(connection.getInputStream(), "UTF-8");
+                    boolean insideItem = false;
+                    int eventType = xpp.getEventType();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_TAG) {
+                            if (xpp.getName().equalsIgnoreCase("item")) {
+                                insideItem = true;
+                                item.channel = link;
+                            } else if (xpp.getName().equalsIgnoreCase("title")) {
+                                if (insideItem) {
+                                    String st = xpp.nextText();
+                                    item.title = st;
+                                }
                             } else if (xpp.getName().equalsIgnoreCase("link")) {
-                                item.link = xpp.nextText();
+                                if (insideItem) {
+                                    String st = xpp.nextText();
+                                    item.link = st;
+                                }
                             } else if (xpp.getName().equalsIgnoreCase("description")) {
-                                item.description = xpp.nextText();
+                                if (insideItem) {
+                                    String st = xpp.nextText();
+                                    item.description = st;
+                                }
                             } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
-                                item.date = dateFormat.parse(xpp.getText());
-                            } else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
-                                MainActivity.items.add(item);
-                                insideItem = false;
+                                if (insideItem) {
+                                    String st = xpp.nextText();
+                                    item.date = dateFormat.format(dateFormat.parse(st));
+                                }
                             }
                         }
+                        if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
+                            MainActivity.items.add(item);
+                            insideItem = false;
+                            item = new Item();
+                        }
+                        eventType = xpp.next();
                     }
-                    eventType = xpp.next();
                 }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-        return link;
+        return "";
     }
 
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.items);
+        MainActivity.listView.setAdapter(MainActivity.itemAdapter);
         progressDialog.dismiss();
     }
 }
+

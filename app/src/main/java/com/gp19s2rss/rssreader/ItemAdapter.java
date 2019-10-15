@@ -1,78 +1,47 @@
-// reference: https://blog.csdn.net/lvyoujt/article/details/51599220
-// CC BY-SA 4.0
-
 package com.gp19s2rss.rssreader;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-public class ItemAdapter extends BaseAdapter {
-    private int[] colors = new int[]{0xff3cb371, 0xffa0a0a0};
-    ArrayList<Item> items;
-    Context context;
+public class ItemAdapter extends ArrayAdapter<Item> {
 
-    public ItemAdapter(ArrayList<Item> items, Context context) {
-        this.items = items;
-        this.context = context;
+    ArrayList<Item> items = new ArrayList<>();
+
+    public ItemAdapter(Context context, int textViewResourceId, ArrayList<Item> objects) {
+        super(context, textViewResourceId, objects);
+        items = objects;
     }
 
     @Override
     public int getCount() {
-        return items.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return items.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+        return super.getCount();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(context).inflate(R.layout.item, null);
-            viewHolder.title = convertView.findViewById(R.id.Title);
-            viewHolder.description = convertView.findViewById(R.id.Description);
-            viewHolder.date = convertView.findViewById(R.id.Date);
-            viewHolder.link = convertView.findViewById(R.id.Link);
 
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+        View v = convertView;
+        if (v == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            v = inflater.inflate(R.layout.list_view_items, null);
+
         }
+        TextView title = (TextView) v.findViewById(R.id.Title);
+        TextView description = (TextView) v.findViewById(R.id.Description);
+        TextView date = (TextView) v.findViewById(R.id.Date);
+        TextView link = (TextView) v.findViewById(R.id.Link);
+        title.setText(items.get(position).getTitle());
+        description.setText(items.get(position).getDescription());
+        date.setText(items.get(position).getChannel());
+        link.setText(items.get(position).getDate());
+        return v;
 
-        // Insert data into the viewHolder
-        viewHolder.title.setText(items.get(position).getTitle());
-        viewHolder.description.setText(items.get(position).getDescription());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
-        viewHolder.date.setText(dateFormat.format(items.get(position).date));
-        viewHolder.link.setText(items.get(position).getLink());
-
-        // Change background color of each item
-        int colorPos = position % colors.length;
-        convertView.setBackgroundColor(colors[colorPos]);
-
-        return convertView;
     }
 
-    // Four elements will be displayed out
-    final class ViewHolder {
-        TextView title;
-        TextView description;
-        TextView date;
-        TextView link;
-    }
 }

@@ -1,12 +1,18 @@
 package com.gp19s2rss.rssreader;
 
+import android.app.ListActivity;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,9 +22,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -27,8 +39,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
@@ -36,35 +52,34 @@ public class MainActivity extends AppCompatActivity
 
     Uri rawUri;
     ArrayList<String> links = new ArrayList<>();
-    static Context context;
-    static ArrayList<Item> items = new ArrayList<>();
-    ItemAdapter itemAdapter;
-    ListView listView;
+    public static Context context;
+    public static ArrayList<Item> items = new ArrayList<>();
+    public static ItemAdapter itemAdapter;
+    public static ListView listView;
 
-
-    public ArrayList<String> loadLinks(String filename) {
+    public ArrayList<String> loadLinks(String filename){
         try {
-            File f = new File(getExternalFilesDir(null), filename);
+            File f= new File(getExternalFilesDir(null), filename);
             if (f.exists() && f.canRead() && f.length() != 0) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 links = (ArrayList<String>) ois.readObject();
                 ois.close();
             }
-        } catch (IOException e) {
+        } catch (IOException e){
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e){
             e.printStackTrace();
         }
         return links;
     }
 
-    public void saveLinks(String filename) {
-        try {
-            File f = new File(getExternalFilesDir(null), filename);
+    public void saveLinks(String filename){
+        try{
+            File f= new File(getExternalFilesDir(null), filename);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(links);
             oos.close();
-        } catch (IOException e) {
+        } catch (IOException e){
             e.printStackTrace();
         }
     }
@@ -87,16 +102,16 @@ public class MainActivity extends AppCompatActivity
                                 Toast.makeText(MainActivity.this,
                                         "Subscribe Successfully.",
                                         Toast.LENGTH_SHORT).show();
-
                                 saveLinks("links.ser");
                                 refresh();
-                                itemAdapter = new ItemAdapter(items, MainActivity.this);
-                                listView.setAdapter(itemAdapter);//
                                 Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
                                         Toast.LENGTH_SHORT).show();
+//                                itemAdapter = new ItemAdapter(MainActivity.this, R.layout.list_view_items, items);
+//                                listView.setAdapter(itemAdapter);//
+//                                itemAdapter.notifyDataSetChanged();
                             }
                         } else {
                             Toast.makeText(MainActivity.this,
@@ -114,6 +129,8 @@ public class MainActivity extends AppCompatActivity
     // refresh
     // folder (icon)
 
+    //?web user, browser/ scroll, load, auto sort/ notify/ UI
+
     // rust server
     // transfer parse html to rich text (viewer)
 
@@ -123,6 +140,7 @@ public class MainActivity extends AppCompatActivity
     // add - folder - refresh
 
     //treat navigation drawer as listview(both clickable); setadapter throw null pointer exception; How to correctly implement BaseAdapter.notifyDataSetChanged() in Android; asynctask execute;
+    // asynctask notify; list view
 
     // Reaction to the valid uri input.
     protected void Valid_URI_Action(Uri uri) {
@@ -130,16 +148,12 @@ public class MainActivity extends AppCompatActivity
         //startActivity(intent);
     }
 
-    public void refresh() {
+    public void refresh(){
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
-        for (String s : links) {
-            fetchTask.execute(s);
-        }
-        for (Item i : items) {
-            System.out.println(i.title);
-        }
-        itemAdapter.notifyDataSetChanged();
+        items = new ArrayList<>();
+        fetchTask.execute(links.toArray(new String[links.size()]));
+        // not empty, sorted by time automatically
     }
 
     @Override
@@ -149,28 +163,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         context = getApplicationContext();
-        saveLinks("links.ser"); // clean
-        links = loadLinks("links.ser");
-        Fetch fetchTask = new Fetch();
-        for (String s : links) {
-            fetchTask.execute(s);
-        }
 
-        // Adapter test
-        Item test = new Item();
-        test.channel = "link";
-        test.date = new Date(1, 1, 1, 1, 1, 1);
-        test.description = "description";
-        test.title = "title";
-        items.add(test);
-
-
-        // To represent items by the new format inside the list_Viewer
-        itemAdapter = new ItemAdapter(items, MainActivity.this);
+        // To represent items inside a list_Viewer
+        itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
         listView = (ListView) findViewById(R.id.list_view);
         listView.setAdapter(itemAdapter);
-
-        // Click link to show that page.
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -179,7 +176,7 @@ public class MainActivity extends AppCompatActivity
                 //startActivity(intent);
                 String url = items.get(position).link;
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
-                intent.putExtra("link", url);
+                intent.putExtra("link",url);
 //                intent.setClass(MainActivity.this, ReaderActivity.class);
                 startActivity(intent);
             }
@@ -204,6 +201,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
+
+//        saveLinks("links.ser"); // clean
+        links = loadLinks("links.ser");
+        Fetch fetchTask = new Fetch();
+        for (String s : links) {
+            fetchTask.execute(s);
+        }
     }
 
     public static Context getAppContext() {

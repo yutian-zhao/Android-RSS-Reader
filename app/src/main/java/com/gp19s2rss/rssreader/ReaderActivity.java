@@ -3,10 +3,15 @@
 
 package com.gp19s2rss.rssreader;
 
+
+import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -52,5 +57,21 @@ public class ReaderActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_reader);
+
+        WebView webView = (WebView) findViewById(R.id.webview);
+
+        // web view
+        Intent intent = getIntent();
+        String info = intent.getStringExtra("link");
+        webView.loadUrl(info);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 }
