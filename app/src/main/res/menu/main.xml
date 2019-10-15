@@ -6,4 +6,9 @@
         android:orderInCategory="100"
         android:title="Sort recently"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/sort_by_early"
+        android:orderInCategory="100"
+        android:title="Sort early"
+        app:showAsAction="never" />
 </menu><!--delete-->

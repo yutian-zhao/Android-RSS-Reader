@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
 
-        saveLinks("links.ser"); // clean
+//        saveLinks("links.ser"); // clean
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
         for (String s : links) {
@@ -253,6 +253,25 @@ public class MainActivity extends AppCompatActivity
             });
             itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
             listView.setAdapter(itemAdapter);
+
+            Toast.makeText(MainActivity.this,
+                    "Sort by time recently successfully.",
+                    Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.sort_by_early) {
+            // Sort all items by ordering date.
+            Collections.sort(items, new Comparator<Item>() {
+                @Override
+                public int compare(Item i1, Item i2) {
+                    return i1.getDate().compareTo(i2.getDate());
+                }
+            });
+            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+            listView.setAdapter(itemAdapter);
+
+            Toast.makeText(MainActivity.this,
+                    "Sort by time early successfully.",
+                    Toast.LENGTH_SHORT).show();
             return true;
         }
 
