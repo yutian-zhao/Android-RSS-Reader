@@ -13,7 +13,10 @@
         android:layout_alignParentTop="true"
         android:maxLines="1"
         android:text="Title"
-        android:textSize="16sp" />
+        android:textAllCaps="true"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/Description"
@@ -23,28 +26,33 @@
         android:layout_alignParentLeft="true"
         android:maxLines="2"
         android:text="Description"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/Link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Description"
+        android:layout_alignParentLeft="true"
+        android:maxLines="1"
+        android:text="Link"
+
+        android:textColor="@android:color/holo_blue_light"
         android:textSize="12sp" />
 
     <TextView
         android:id="@+id/Date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Description"
+        android:layout_below="@+id/Link"
         android:layout_alignParentLeft="true"
         android:maxLines="1"
         android:text="Date"
 
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/Link"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Date"
-        android:layout_alignParentLeft="true"
-        android:maxLines="1"
-        android:text="Link"
-
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
         android:textSize="12sp" />
 
 </LinearLayout>

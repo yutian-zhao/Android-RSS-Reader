@@ -34,12 +34,12 @@ public class ItemAdapter extends ArrayAdapter<Item> {
         }
         TextView title = (TextView) v.findViewById(R.id.Title);
         TextView description = (TextView) v.findViewById(R.id.Description);
-        TextView date = (TextView) v.findViewById(R.id.Date);
         TextView link = (TextView) v.findViewById(R.id.Link);
+        TextView date = (TextView) v.findViewById(R.id.Date);
         title.setText(items.get(position).getTitle());
         description.setText(items.get(position).getDescription());
-        date.setText(items.get(position).getChannel());
-        link.setText(items.get(position).getDate());
+        link.setText(items.get(position).getChannel());
+        date.setText(items.get(position).getDate());
         return v;
 
     }
