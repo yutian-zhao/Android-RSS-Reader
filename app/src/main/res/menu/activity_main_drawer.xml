@@ -9,10 +9,6 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Home" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Tools" />
@@ -24,6 +20,10 @@
                 android:id="@+id/nav_management"
                 android:icon="@drawable/ic_menu_manage"
                 android:title="Management" />
+            <item
+                android:id="@+id/nav_Websites"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="Websites" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"

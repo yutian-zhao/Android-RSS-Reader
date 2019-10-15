@@ -38,7 +38,7 @@ public class ItemAdapter extends ArrayAdapter<Item> {
         TextView date = convertView.findViewById(R.id.Date);
         title.setText(items.get(position).getTitle());
         description.setText(items.get(position).getDescription());
-        link.setText(items.get(position).getChannel());
+        link.setText(items.get(position).getLink());
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
         date.setText(dateFormat.format(items.get(position).getDate()));
         return convertView;
