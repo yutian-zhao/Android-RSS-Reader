@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
 
-        saveLinks("links.ser"); // clean
+        //saveLinks("links.ser"); // clean
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
         for (String s : links) {
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_management) {
             Intent intent = new Intent(MainActivity.this, ManagementActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_Websites) {
 
         } else if (id == R.id.nav_manage) {
 
