@@ -1,23 +1,17 @@
 package com.gp19s2rss.rssreader;
 
 
+import java.util.Date;
+
 public class Item {
     String channel;
     String title;
     String link;
     String description;
-    String date;
+    Date date;
 
-    public void Item (){};
-
-//    public void Item (){}
-//    public Item(String channel, String title, String link, String description, String date) {
-//        this.channel = channel;
-//        this.title = title;
-//        this.link = link;
-//        this.description = description;
-//        this.date = date;
-//    }
+    public void Item() {
+    }
 
     public String getChannel() {
         return channel;
@@ -35,7 +29,7 @@ public class Item {
         return description;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 }

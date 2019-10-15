@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class ItemAdapter extends ArrayAdapter<Item> {
@@ -26,22 +27,20 @@ public class ItemAdapter extends ArrayAdapter<Item> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View v = convertView;
-        if (v == null) {
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.list_view_items, null);
+            convertView = inflater.inflate(R.layout.list_view_items, null);
 
         }
-        TextView title = (TextView) v.findViewById(R.id.Title);
-        TextView description = (TextView) v.findViewById(R.id.Description);
-        TextView link = (TextView) v.findViewById(R.id.Link);
-        TextView date = (TextView) v.findViewById(R.id.Date);
+        TextView title = convertView.findViewById(R.id.Title);
+        TextView description = convertView.findViewById(R.id.Description);
+        TextView link = convertView.findViewById(R.id.Link);
+        TextView date = convertView.findViewById(R.id.Date);
         title.setText(items.get(position).getTitle());
         description.setText(items.get(position).getDescription());
         link.setText(items.get(position).getChannel());
-        date.setText(items.get(position).getDate());
-        return v;
-
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
+        date.setText(dateFormat.format(items.get(position).getDate()));
+        return convertView;
     }
-
 }

@@ -42,6 +42,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,29 +59,29 @@ public class MainActivity extends AppCompatActivity
     public static ItemAdapter itemAdapter;
     public static ListView listView;
 
-    public ArrayList<String> loadLinks(String filename){
+    public ArrayList<String> loadLinks(String filename) {
         try {
-            File f= new File(getExternalFilesDir(null), filename);
+            File f = new File(getExternalFilesDir(null), filename);
             if (f.exists() && f.canRead() && f.length() != 0) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
                 links = (ArrayList<String>) ois.readObject();
                 ois.close();
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e){
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return links;
     }
 
-    public void saveLinks(String filename){
-        try{
-            File f= new File(getExternalFilesDir(null), filename);
+    public void saveLinks(String filename) {
+        try {
+            File f = new File(getExternalFilesDir(null), filename);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(links);
             oos.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -148,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         //startActivity(intent);
     }
 
-    public void refresh(){
+    public void refresh() {
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
         items = new ArrayList<>();
@@ -167,6 +169,7 @@ public class MainActivity extends AppCompatActivity
         // To represent items inside a list_Viewer
         itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
         listView = (ListView) findViewById(R.id.list_view);
+
         listView.setAdapter(itemAdapter);
         AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
@@ -176,7 +179,7 @@ public class MainActivity extends AppCompatActivity
                 //startActivity(intent);
                 String url = items.get(position).link;
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
-                intent.putExtra("link",url);
+                intent.putExtra("link", url);
 //                intent.setClass(MainActivity.this, ReaderActivity.class);
                 startActivity(intent);
             }
@@ -202,7 +205,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
 
-//        saveLinks("links.ser"); // clean
+        saveLinks("links.ser"); // clean
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
         for (String s : links) {
@@ -239,7 +242,17 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.sort_by_recent) {
+
+            // Sort all items by ordering date.
+            Collections.sort(items, new Comparator<Item>() {
+                @Override
+                public int compare(Item i1, Item i2) {
+                    return i2.getDate().compareTo(i1.getDate());
+                }
+            });
+            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+            listView.setAdapter(itemAdapter);
             return true;
         }
 
@@ -255,7 +268,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_management) {
-            Intent intent = new Intent(MainActivity.this,ManagementActivity.class);
+            Intent intent = new Intent(MainActivity.this, ManagementActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_slideshow) {
 
