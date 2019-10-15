@@ -71,6 +71,7 @@ public class ReaderActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String info = intent.getStringExtra("link");
         webView.loadUrl(info);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
