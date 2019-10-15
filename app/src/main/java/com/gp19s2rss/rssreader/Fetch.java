@@ -1,11 +1,7 @@
 package com.gp19s2rss.rssreader;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ListView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -18,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Fetch extends AsyncTask<String, Integer, String> {
 
@@ -68,8 +65,9 @@ public class Fetch extends AsyncTask<String, Integer, String> {
                                 }
                             } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
                                 if (insideItem) {
+                                    // TODO time get wrong
                                     String st = xpp.nextText();
-                                    item.date = dateFormat.format(dateFormat.parse(st));
+                                    item.date = dateFormat.parse(st);
                                 }
                             }
                         }
