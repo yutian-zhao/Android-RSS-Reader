@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.sort_by_recent) {
+        if (id == R.id.sort_by_new) {
 
             // Sort all items by ordering date.
             Collections.sort(items, new Comparator<Item>() {
@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity
                     "Sort by time recently successfully.",
                     Toast.LENGTH_SHORT).show();
             return true;
-        } else if (id == R.id.sort_by_early) {
+        } else if (id == R.id.sort_by_old) {
             // Sort all items by ordering date.
             Collections.sort(items, new Comparator<Item>() {
                 @Override
