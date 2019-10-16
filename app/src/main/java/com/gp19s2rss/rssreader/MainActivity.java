@@ -41,6 +41,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,10 +55,15 @@ public class MainActivity extends AppCompatActivity
 
     Uri rawUri;
     ArrayList<String> links = new ArrayList<>();
+    public static ArrayList<String> fav = new ArrayList<>();
+    public static ArrayList<Item> favItem = new ArrayList<>();
+    public static Item current_Item = new Item();
+    public static Set<String> favorite_folder = new HashSet<>();
     public static Context context;
     public static ArrayList<Item> items = new ArrayList<>();
     public static ItemAdapter itemAdapter;
     public static ListView listView;
+    public static int flag = 0;
 
     public ArrayList<String> loadLinks(String filename) {
         try {
@@ -75,11 +81,38 @@ public class MainActivity extends AppCompatActivity
         return links;
     }
 
+    public ArrayList<String> loadfavs(String filename) {
+        try {
+            File f = new File(getExternalFilesDir(null), filename);
+            if (f.exists() && f.canRead() && f.length() != 0) {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+                fav = (ArrayList<String>) ois.readObject();
+                ois.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return fav;
+    }
+
     public void saveLinks(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
             oos.writeObject(links);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void savefavs(String filename) {
+        try {
+            File f = new File(getExternalFilesDir(null), filename);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(fav);
             oos.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -171,13 +204,21 @@ public class MainActivity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.list_view);
 
         listView.setAdapter(itemAdapter);
-        AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+        final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Uri targetUri = Uri.parse(links.get(position));
                 //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
                 //startActivity(intent);
-                String url = items.get(position).link;
+                String url;
+                if (flag == 0) {
+                    url = items.get(position).link;
+                    current_Item = items.get(position);
+                }
+                else {
+                    url = favItem.get(position).link;
+                    current_Item = favItem.get(position);
+                }
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
                 intent.putExtra("link", url);
 //                intent.setClass(MainActivity.this, ReaderActivity.class);
@@ -205,8 +246,27 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
 
-        saveLinks("links.ser"); // clean
+        //saveLinks("links.ser"); // clean
+        savefavs("favs.ser"); // clean
         links = loadLinks("links.ser");
+        fav = loadfavs("favs.ser");
+        //load my favs
+        for (int i = 0; i < fav.size(); i+=5) {
+            Item item = new Item();
+            item.channel = fav.get(i);
+            item.link = fav.get(i+1);
+            item.description = fav.get(i+2);
+            item.title = fav.get(i+3);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+            try {
+                item.date = dateFormat.parse(fav.get(i+4));
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+            favItem.add(item);
+            favorite_folder.add(item.link);
+        }
+
         Fetch fetchTask = new Fetch();
         for (String s : links) {
             fetchTask.execute(s);
@@ -285,14 +345,25 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            // show all
+            flag = 0;
+            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+            listView.setAdapter(itemAdapter);
         } else if (id == R.id.nav_management) {
             Intent intent = new Intent(MainActivity.this, ManagementActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_Websites) {
 
         } else if (id == R.id.nav_manage) {
+            // see the favs
+            flag=1;
+            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+            listView.setAdapter(itemAdapter);
 
+            Toast.makeText(MainActivity.this,
+                    "Show the favourite folder",
+                    Toast.LENGTH_SHORT).show();
+            return true;
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

@@ -13,6 +13,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +27,17 @@ import static android.widget.Toast.*;
 public class ReaderActivity extends AppCompatActivity {
 
     Uri rawUri;
-    Set<Uri> favorite_folder = new HashSet<>();
+
+    public void savefavs(String filename) {
+        try {
+            File f = new File(getExternalFilesDir(null), filename);
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(MainActivity.fav);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -42,11 +58,47 @@ public class ReaderActivity extends AppCompatActivity {
                 break;
             // Favorite operation
             case R.id.id_favorite_item:
-                if (!favorite_folder.contains(rawUri)) {
-                    favorite_folder.add(rawUri);
+                if (!MainActivity.favorite_folder.contains(MainActivity.current_Item.link)) {
+                    MainActivity.favorite_folder.add(MainActivity.current_Item.link);
+                    MainActivity.favItem.add(MainActivity.current_Item);
+
+                    MainActivity.fav.add(MainActivity.current_Item.channel);
+                    MainActivity.fav.add(MainActivity.current_Item.link);
+                    MainActivity.fav.add(MainActivity.current_Item.description);
+                    MainActivity.fav.add(MainActivity.current_Item.title);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                    MainActivity.fav.add(dateFormat.format(MainActivity.current_Item.date));
+
+                    savefavs("favs.ser");
                     makeText(ReaderActivity.this, "Add to favorite folder.", LENGTH_SHORT).show();
                 } else {
                     makeText(ReaderActivity.this, "This article has been favorite.", LENGTH_SHORT).show();
+                }
+                break;
+            // Favorite operation
+            case R.id.id_unfavorite_item:
+                if (MainActivity.favorite_folder.contains(MainActivity.current_Item.link)) {
+                    MainActivity.favorite_folder.remove(MainActivity.current_Item.link);
+                    MainActivity.favItem.remove(MainActivity.current_Item);
+                    //save
+                    MainActivity.fav = new ArrayList<>();
+                    for (Item i : MainActivity.favItem){
+                        MainActivity.fav.add(i.channel);
+                        MainActivity.fav.add(i.link);
+                        MainActivity.fav.add(i.description);
+                        MainActivity.fav.add(i.title);
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+                        MainActivity.fav.add(dateFormat.format(i.date));
+                    }
+                    savefavs("favs.ser");
+                    //refresh
+                    if (MainActivity.flag == 1) {
+                        MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.favItem);
+                        MainActivity.listView.setAdapter(MainActivity.itemAdapter);
+                    }
+                    makeText(ReaderActivity.this, "Delete from favorite folder.", LENGTH_SHORT).show();
+                } else {
+                    makeText(ReaderActivity.this, "This article is not in the favorite folder yet~~.", LENGTH_SHORT).show();
                 }
                 break;
             // Unread operation

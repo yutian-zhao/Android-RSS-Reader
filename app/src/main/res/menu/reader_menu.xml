@@ -7,6 +7,9 @@
         android:id="@+id/id_favorite_item"
         android:title="favorite" />
     <item
+        android:id="@+id/id_unfavorite_item"
+        android:title="unfavorite" />
+    <item
         android:id="@+id/id_share_item"
         android:title="share" />
 </menu>
