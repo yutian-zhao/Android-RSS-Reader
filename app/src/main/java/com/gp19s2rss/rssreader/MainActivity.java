@@ -400,6 +400,8 @@ public class MainActivity extends AppCompatActivity
                         } else if (position == 1){
                             favItem = new ArrayList<>();
                             savefavs("favs.ser");
+                            MainActivity.itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                            listView.setAdapter(MainActivity.itemAdapter);
                         } else {
                             MainActivity.links.remove(list.get(position));
                             saveLinks("links.ser");
