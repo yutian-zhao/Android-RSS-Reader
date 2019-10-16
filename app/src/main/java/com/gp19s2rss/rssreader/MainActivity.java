@@ -140,8 +140,7 @@ public class MainActivity extends AppCompatActivity
                                 saveLinks("links.ser");
                                 refresh();
                                 Valid_URI_Action(rawUri);
-
-                    String url = items.get(position).link;                    } else {
+                            } else {
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
                                         Toast.LENGTH_SHORT).show();
