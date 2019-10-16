@@ -4,11 +4,11 @@
     <item
         android:id="@+id/sort_by_new"
         android:orderInCategory="100"
-        android:title="Sort new"
+        android:title="Sort by new"
         app:showAsAction="never" />
     <item
         android:id="@+id/sort_by_old"
         android:orderInCategory="100"
-        android:title="Sort old"
+        android:title="Sort by old"
         app:showAsAction="never" />
 </menu><!--delete-->

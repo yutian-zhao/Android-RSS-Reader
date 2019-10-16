@@ -144,9 +144,6 @@ public class MainActivity extends AppCompatActivity
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
                                         Toast.LENGTH_SHORT).show();
-//                                itemAdapter = new ItemAdapter(MainActivity.this, R.layout.list_view_items, items);
-//                                listView.setAdapter(itemAdapter);//
-//                                itemAdapter.notifyDataSetChanged();
                             }
                         } else {
                             Toast.makeText(MainActivity.this,
@@ -206,23 +203,43 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
 
                 // Sort all items by ordering date.
-                Collections.sort(items, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item i1, Item i2) {
-                        return i2.getDate().compareTo(i1.getDate());
-                    }
-                });
-                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-                listView.setAdapter(itemAdapter);
-                Toast.makeText(MainActivity.this,
-                        "Refresh the page.",
-                        Toast.LENGTH_SHORT).show();
+                if (flag == 0) {
+                    Collections.sort(items, new Comparator<Item>() {
+                        @Override
+                        public int compare(Item i1, Item i2) {
+                            return i2.getDate().compareTo(i1.getDate());
+                        }
+                    });
+                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                    listView.setAdapter(itemAdapter);
+                    Toast.makeText(MainActivity.this,
+                            "Refresh the page.",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Collections.sort(favItem, new Comparator<Item>() {
+                        @Override
+                        public int compare(Item i1, Item i2) {
+                            return i2.getDate().compareTo(i1.getDate());
+                        }
+                    });
+                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                    listView.setAdapter(itemAdapter);
+                    Toast.makeText(MainActivity.this,
+                            "Refresh the page.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         // To represent items inside a list_Viewer
-        itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
-        listView = findViewById(R.id.list_view);
+        if (flag == 0) {
+            itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
+            listView = findViewById(R.id.list_view);
+        }
+        else {
+            itemAdapter = new ItemAdapter(this, R.layout.list_view_items, favItem);
+            listView = findViewById(R.id.list_view);
+        }
 
         listView.setAdapter(itemAdapter);
         final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
@@ -268,7 +285,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this); // press
 
         //saveLinks("links.ser"); // clean
-        savefavs("favs.ser"); // clean
+        //savefavs("favs.ser"); // clean
         links = loadLinks("links.ser");
         fav = loadfavs("favs.ser");
         //load my favs
@@ -323,37 +340,72 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.sort_by_new) {
+        if (flag == 0) {
+            if (id == R.id.sort_by_new) {
 
-            // Sort all items by ordering date.
-            Collections.sort(items, new Comparator<Item>() {
-                @Override
-                public int compare(Item i1, Item i2) {
-                    return i2.getDate().compareTo(i1.getDate());
-                }
-            });
-            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-            listView.setAdapter(itemAdapter);
+                // Sort all items by ordering date.
+                Collections.sort(items, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item i1, Item i2) {
+                        return i2.getDate().compareTo(i1.getDate());
+                    }
+                });
+                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                listView.setAdapter(itemAdapter);
 
-            Toast.makeText(MainActivity.this,
-                    "Sort by time recently successfully.",
-                    Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.sort_by_old) {
-            // Sort all items by ordering date.
-            Collections.sort(items, new Comparator<Item>() {
-                @Override
-                public int compare(Item i1, Item i2) {
-                    return i1.getDate().compareTo(i2.getDate());
-                }
-            });
-            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-            listView.setAdapter(itemAdapter);
+                Toast.makeText(MainActivity.this,
+                        "Sort by time recently successfully.",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (id == R.id.sort_by_old) {
+                // Sort all items by ordering date.
+                Collections.sort(items, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item i1, Item i2) {
+                        return i1.getDate().compareTo(i2.getDate());
+                    }
+                });
+                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                listView.setAdapter(itemAdapter);
 
-            Toast.makeText(MainActivity.this,
-                    "Sort by time early successfully.",
-                    Toast.LENGTH_SHORT).show();
-            return true;
+                Toast.makeText(MainActivity.this,
+                        "Sort by time early successfully.",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        } else {
+            if (id == R.id.sort_by_new) {
+
+                // Sort all items by ordering date.
+                Collections.sort(favItem, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item i1, Item i2) {
+                        return i2.getDate().compareTo(i1.getDate());
+                    }
+                });
+                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                listView.setAdapter(itemAdapter);
+
+                Toast.makeText(MainActivity.this,
+                        "Sort by time recently successfully.",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            } else if (id == R.id.sort_by_old) {
+                // Sort all items by ordering date.
+                Collections.sort(favItem, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item i1, Item i2) {
+                        return i1.getDate().compareTo(i2.getDate());
+                    }
+                });
+                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                listView.setAdapter(itemAdapter);
+
+                Toast.makeText(MainActivity.this,
+                        "Sort by time early successfully.",
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
