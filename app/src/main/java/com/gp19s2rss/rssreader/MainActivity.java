@@ -5,6 +5,8 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
@@ -33,6 +35,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -54,16 +61,19 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Uri rawUri;
-    ArrayList<String> links = new ArrayList<>();
+    public static ArrayList<String> links = new ArrayList<>();
     public static ArrayList<String> fav = new ArrayList<>();
+    public static ArrayList<String> list = new ArrayList<>();
     public static ArrayList<Item> favItem = new ArrayList<>();
     public static Item current_Item = new Item();
-    public static Set<String> favorite_folder = new HashSet<>();
     public static Context context;
     public static ArrayList<Item> items = new ArrayList<>();
     public static ItemAdapter itemAdapter;
     public static ListView listView;
     public static int flag = 0;
+    public static ArrayList<Item> linkItems= new ArrayList<>();
+    public static SwipeMenuListView swipeView;
+    public static ArrayAdapter adapter;
 
     public ArrayList<String> loadLinks(String filename) {
         try {
@@ -139,6 +149,7 @@ public class MainActivity extends AppCompatActivity
                                         Toast.LENGTH_SHORT).show();
                                 saveLinks("links.ser");
                                 refresh();
+                                refreshSwipeView(links);
                                 Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
@@ -201,33 +212,11 @@ public class MainActivity extends AppCompatActivity
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                refresh();
                 // Sort all items by ordering date.
-                if (flag == 0) {
-                    Collections.sort(items, new Comparator<Item>() {
-                        @Override
-                        public int compare(Item i1, Item i2) {
-                            return i2.getDate().compareTo(i1.getDate());
-                        }
-                    });
-                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-                    listView.setAdapter(itemAdapter);
-                    Toast.makeText(MainActivity.this,
-                            "Refresh the page.",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Collections.sort(favItem, new Comparator<Item>() {
-                        @Override
-                        public int compare(Item i1, Item i2) {
-                            return i2.getDate().compareTo(i1.getDate());
-                        }
-                    });
-                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-                    listView.setAdapter(itemAdapter);
-                    Toast.makeText(MainActivity.this,
-                            "Refresh the page.",
-                            Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(MainActivity.this,
+                        "Refresh the page.",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -236,8 +225,12 @@ public class MainActivity extends AppCompatActivity
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
             listView = findViewById(R.id.list_view);
         }
-        else {
+        else if (flag == 1){
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, favItem);
+            listView = findViewById(R.id.list_view);
+        }
+        else {
+            itemAdapter = new ItemAdapter(this, R.layout.list_view_items, linkItems);
             listView = findViewById(R.id.list_view);
         }
 
@@ -252,10 +245,12 @@ public class MainActivity extends AppCompatActivity
                 if (flag == 0) {
                     url = items.get(position).link;
                     current_Item = items.get(position);
-                }
-                else {
+                } else if (flag == 1){
                     url = favItem.get(position).link;
                     current_Item = favItem.get(position);
+                } else {
+                    url = linkItems.get(position).link;
+                    current_Item = linkItems.get(position);
                 }
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
                 intent.putExtra("link", url);
@@ -284,8 +279,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this); // press
 
-        //saveLinks("links.ser"); // clean
-        //savefavs("favs.ser"); // clean
+        saveLinks("links.ser"); // clean
+        savefavs("favs.ser"); // clean
         links = loadLinks("links.ser");
         fav = loadfavs("favs.ser");
         //load my favs
@@ -301,15 +296,186 @@ public class MainActivity extends AppCompatActivity
             }catch (Exception e) {
                 e.printStackTrace();
             }
-            favItem.add(item);
-            favorite_folder.add(item.link);
+            if (!favItem.contains(item))
+                favItem.add(item);
         }
 
         Fetch fetchTask = new Fetch();
         for (String s : links) {
             fetchTask.execute(s);
         }
+
+        list = new ArrayList<>();
+        list.add("All");
+        list.add("Favourite");
+        for (String s : links){
+            list.add(s);
+        }
+//        refreshSwipeView(links);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        swipeView = (SwipeMenuListView) findViewById(R.id.swipeView);
+        swipeView.setAdapter(adapter);
+//        refreshSwipeView(links);
+        swipeView.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);
+
+
+        SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "open" item
+                SwipeMenuItem openItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204,
+                        113)));
+                // set item width
+                openItem.setWidth(170);
+                // set item title
+                openItem.setIcon(R.drawable.ic_action_open);
+                // add to menu
+                menu.addMenuItem(openItem);
+
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(170);
+                // set a icon
+                deleteItem.setIcon(R.drawable.ic_delete);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
+// set creator
+        swipeView.setMenuCreator(creator);
+        swipeView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index) {
+                    case 0:
+                        // open
+                        if (position == 0){
+                            flag = 0;
+                            refresh();
+                        } else if (position == 1){
+                            flag = 1;
+                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                            listView.setAdapter(itemAdapter);
+
+                            Toast.makeText(MainActivity.this,
+                                    "Show the favourite folder",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            flag = 2;
+                            linkItems.clear();
+                            for (Item i : items){
+                                if (i.channel.equals(list.get(position))){
+                                    linkItems.add(i);
+                                }
+                            }
+                            Log.d("qwert", linkItems.size() + " ");
+                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, linkItems);
+                            listView.setAdapter(itemAdapter);
+
+                            Toast.makeText(MainActivity.this,
+                                    list.get(position),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case 1:
+                        if (position == 0){
+                            list.clear();
+                            list.add("All");
+                            list.add("Favourite");
+                            links.clear();
+                            saveLinks("links.ser");
+                            MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
+                            swipeView.setAdapter(MainActivity.adapter);
+                            refresh();
+                        } else if (position == 1){
+                            favItem = new ArrayList<>();
+                            savefavs("favs.ser");
+                        } else {
+                            MainActivity.links.remove(list.get(position));
+                            saveLinks("links.ser");
+                            MainActivity.list.remove(position);
+                            MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
+                            MainActivity.swipeView.setAdapter(MainActivity.adapter);
+                            refresh();
+                        }
+                        break;
+                }
+                // false : close the menu; true : not close the menu
+                return false;
+            }
+        });
+
     }
+
+    public void refreshSwipeView(ArrayList<String> input){
+        list = new ArrayList<>();
+        list.add("All");
+        list.add("Favourite");
+        for (String s : input){
+            list.add(s);
+        }
+
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        swipeView.setAdapter(adapter);
+
+    }
+
+    public void updateSwipeView(){
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+        swipeView.setAdapter(adapter);
+    }
+
+    public void sortByNew(ArrayList<Item> items){
+        // Sort all items by ordering date.
+        Collections.sort(items, new Comparator<Item>() {
+            @Override
+            public int compare(Item i1, Item i2) {
+                return i2.getDate().compareTo(i1.getDate());
+            }
+        });
+        itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+        listView.setAdapter(itemAdapter);
+
+        Toast.makeText(MainActivity.this,
+                "Sort by new successfully.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void sortByOld(ArrayList<Item> items){
+        // Sort all items by ordering date.
+        Collections.sort(items, new Comparator<Item>() {
+            @Override
+            public int compare(Item i1, Item i2) {
+                return i1.getDate().compareTo(i2.getDate());
+            }
+        });
+        itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+        listView.setAdapter(itemAdapter);
+
+        Toast.makeText(MainActivity.this,
+                "Sort by old successfully.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+
+//    public void deleteItem(int pos){
+////        ArrayList<Item> items = new ArrayList<>();
+////        for(int i=0 ; i<adapter.getCount() ; i++){
+////            if (i != pos){
+//                adapter.remove(adapter.getItem(pos));
+////            }
+////        }
+//    }
 
     public static Context getAppContext() {
         return context;
@@ -342,68 +508,26 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (flag == 0) {
             if (id == R.id.sort_by_new) {
-
-                // Sort all items by ordering date.
-                Collections.sort(items, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item i1, Item i2) {
-                        return i2.getDate().compareTo(i1.getDate());
-                    }
-                });
-                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-                listView.setAdapter(itemAdapter);
-
-                Toast.makeText(MainActivity.this,
-                        "Sort by time recently successfully.",
-                        Toast.LENGTH_SHORT).show();
+                sortByNew(items);
                 return true;
             } else if (id == R.id.sort_by_old) {
-                // Sort all items by ordering date.
-                Collections.sort(items, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item i1, Item i2) {
-                        return i1.getDate().compareTo(i2.getDate());
-                    }
-                });
-                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-                listView.setAdapter(itemAdapter);
-
-                Toast.makeText(MainActivity.this,
-                        "Sort by time early successfully.",
-                        Toast.LENGTH_SHORT).show();
+                sortByOld(items);
+                return true;
+            }
+        } else if (flag == 1) {
+            if (id == R.id.sort_by_new) {
+                sortByNew(favItem);
+                return true;
+            } else if (id == R.id.sort_by_old) {
+                sortByOld(favItem);
                 return true;
             }
         } else {
             if (id == R.id.sort_by_new) {
-
-                // Sort all items by ordering date.
-                Collections.sort(favItem, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item i1, Item i2) {
-                        return i2.getDate().compareTo(i1.getDate());
-                    }
-                });
-                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-                listView.setAdapter(itemAdapter);
-
-                Toast.makeText(MainActivity.this,
-                        "Sort by time recently successfully.",
-                        Toast.LENGTH_SHORT).show();
+                sortByNew(linkItems);
                 return true;
             } else if (id == R.id.sort_by_old) {
-                // Sort all items by ordering date.
-                Collections.sort(favItem, new Comparator<Item>() {
-                    @Override
-                    public int compare(Item i1, Item i2) {
-                        return i1.getDate().compareTo(i2.getDate());
-                    }
-                });
-                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-                listView.setAdapter(itemAdapter);
-
-                Toast.makeText(MainActivity.this,
-                        "Sort by time early successfully.",
-                        Toast.LENGTH_SHORT).show();
+                sortByOld(linkItems);
                 return true;
             }
         }
@@ -415,36 +539,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // show all
-            flag = 0;
-            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
-            listView.setAdapter(itemAdapter);
-        } else if (id == R.id.nav_management) {
-            Intent intent = new Intent(MainActivity.this, ManagementActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_Websites) {
-
-        } else if (id == R.id.nav_manage) {
-            // see the favs
-            flag=1;
-            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-            listView.setAdapter(itemAdapter);
-
-            Toast.makeText(MainActivity.this,
-                    "Show the favourite folder",
-                    Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-            Uri uri = Uri.parse("https://www.baidu.com");
-            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            startActivity(intent); // usable
-        }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

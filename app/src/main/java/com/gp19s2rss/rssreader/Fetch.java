@@ -15,6 +15,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class Fetch extends AsyncTask<String, Integer, String> {
@@ -63,17 +65,15 @@ public class Fetch extends AsyncTask<String, Integer, String> {
                                 }
                             } else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
                                 if (insideItem) {
-                                    // TODO time get wrong
                                     String st = xmlPullParser.nextText();
-                                    System.out.println("?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
-
                                     item.date = dateFormat.parse(st);
-                                    System.out.println(item.date);
                                 }
                             }
                         }
                         if (eventType == XmlPullParser.END_TAG && xmlPullParser.getName().equalsIgnoreCase("item")) {
-                            MainActivity.items.add(item);
+                            if (!MainActivity.items.contains(item)) {
+                                MainActivity.items.add(item);
+                            }
                             insideItem = false;
                             item = new Item();
                         }
@@ -96,8 +96,34 @@ public class Fetch extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
-        MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.items);
-        MainActivity.listView.setAdapter(MainActivity.itemAdapter);
+        if (MainActivity.flag == 0) {
+            Collections.sort(MainActivity.items, new Comparator<Item>() {
+                @Override
+                public int compare(Item i1, Item i2) {
+                    return i2.getDate().compareTo(i1.getDate());
+                }
+            });
+            MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.items);
+            MainActivity.listView.setAdapter(MainActivity.itemAdapter);
+        } else if (MainActivity.flag == 1){
+            Collections.sort(MainActivity.favItem, new Comparator<Item>() {
+                @Override
+                public int compare(Item i1, Item i2) {
+                    return i2.getDate().compareTo(i1.getDate());
+                }
+            });
+            MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.favItem);
+            MainActivity.listView.setAdapter(MainActivity.itemAdapter);
+        } else {
+            Collections.sort(MainActivity.linkItems, new Comparator<Item>() {
+                @Override
+                public int compare(Item i1, Item i2) {
+                    return i2.getDate().compareTo(i1.getDate());
+                }
+            });
+            MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.linkItems);
+            MainActivity.listView.setAdapter(MainActivity.itemAdapter);
+        }
         progressDialog.dismiss();
     }
 }

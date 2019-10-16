@@ -9,4 +9,10 @@
     <string name="Share">Share</string>
     <string name="unread">Unread</string>
     <string name="Favorite">Favorite</string>
+    <string name="home">Home</string>
+    <string name="communicate">Communicate</string>
+    <string name="management">Management</string>
+    <string name="websites">Websites</string>
+    <string name="share">Share</string>
+    <string name="send">Send</string>
 </resources>

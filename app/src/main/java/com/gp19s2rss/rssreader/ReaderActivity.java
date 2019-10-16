@@ -54,12 +54,17 @@ public class ReaderActivity extends AppCompatActivity {
                 return false;
             // Share operation
             case R.id.id_share_item:
+                String message = "Text I want to share.";
+                Intent share = new Intent(Intent.ACTION_SEND);
+                share.setType("text/plain");
+                share.putExtra(Intent.EXTRA_TEXT, message);
+
+                startActivity(Intent.createChooser(share, "Title of the dialog the system will open"));
                 makeText(ReaderActivity.this, "You share this article successfully.", LENGTH_SHORT).show();
                 break;
             // Favorite operation
             case R.id.id_favorite_item:
-                if (!MainActivity.favorite_folder.contains(MainActivity.current_Item.link)) {
-                    MainActivity.favorite_folder.add(MainActivity.current_Item.link);
+                if (!MainActivity.favItem.contains(MainActivity.current_Item)) {
                     MainActivity.favItem.add(MainActivity.current_Item);
 
                     MainActivity.fav.add(MainActivity.current_Item.channel);
@@ -77,8 +82,7 @@ public class ReaderActivity extends AppCompatActivity {
                 break;
             // Favorite operation
             case R.id.id_unfavorite_item:
-                if (MainActivity.favorite_folder.contains(MainActivity.current_Item.link)) {
-                    MainActivity.favorite_folder.remove(MainActivity.current_Item.link);
+                if (MainActivity.favItem.contains(MainActivity.current_Item)) {
                     MainActivity.favItem.remove(MainActivity.current_Item);
                     //save
                     MainActivity.fav = new ArrayList<>();
