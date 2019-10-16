@@ -140,7 +140,8 @@ public class MainActivity extends AppCompatActivity
                                 saveLinks("links.ser");
                                 refresh();
                                 Valid_URI_Action(rawUri);
-                            } else {
+
+                    String url = items.get(position).link;                    } else {
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
                                         Toast.LENGTH_SHORT).show();
@@ -199,9 +200,30 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         context = getApplicationContext();
 
+        // To refresh the listview by click refresh
+        FloatingActionButton refresh = findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Sort all items by ordering date.
+                Collections.sort(items, new Comparator<Item>() {
+                    @Override
+                    public int compare(Item i1, Item i2) {
+                        return i2.getDate().compareTo(i1.getDate());
+                    }
+                });
+                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                listView.setAdapter(itemAdapter);
+                Toast.makeText(MainActivity.this,
+                        "Refresh the page.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // To represent items inside a list_Viewer
         itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
-        listView = (ListView) findViewById(R.id.list_view);
+        listView = findViewById(R.id.list_view);
 
         listView.setAdapter(itemAdapter);
         final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {

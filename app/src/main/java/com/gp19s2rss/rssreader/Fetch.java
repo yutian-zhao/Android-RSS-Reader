@@ -2,6 +2,7 @@ package com.gp19s2rss.rssreader;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -38,45 +39,45 @@ public class Fetch extends AsyncTask<String, Integer, String> {
                     InputStream response = connection.getInputStream();
                     XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                     factory.setNamespaceAware(false);
-                    XmlPullParser xpp = factory.newPullParser();
-                    xpp.setInput(connection.getInputStream(), "UTF-8");
+                    XmlPullParser xmlPullParser = factory.newPullParser();
+                    xmlPullParser.setInput(connection.getInputStream(), "UTF-8");
                     boolean insideItem = false;
-                    int eventType = xpp.getEventType();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, DD MMM yyyy HH:mm:ss");
+                    int eventType = xmlPullParser.getEventType();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
                     while (eventType != XmlPullParser.END_DOCUMENT) {
                         if (eventType == XmlPullParser.START_TAG) {
-                            if (xpp.getName().equalsIgnoreCase("item")) {
+                            if (xmlPullParser.getName().equalsIgnoreCase("item")) {
                                 insideItem = true;
                                 item.channel = link;
-                            } else if (xpp.getName().equalsIgnoreCase("title")) {
+                            } else if (xmlPullParser.getName().equalsIgnoreCase("title")) {
                                 if (insideItem) {
-                                    String st = xpp.nextText();
-                                    item.title = st;
+                                    item.title = xmlPullParser.nextText();
                                 }
-                            } else if (xpp.getName().equalsIgnoreCase("link")) {
+                            } else if (xmlPullParser.getName().equalsIgnoreCase("link")) {
                                 if (insideItem) {
-                                    String st = xpp.nextText();
-                                    item.link = st;
+                                    item.link = xmlPullParser.nextText();
                                 }
-                            } else if (xpp.getName().equalsIgnoreCase("description")) {
+                            } else if (xmlPullParser.getName().equalsIgnoreCase("description")) {
                                 if (insideItem) {
-                                    String st = xpp.nextText();
-                                    item.description = st;
+                                    item.description = xmlPullParser.nextText();
                                 }
-                            } else if (xpp.getName().equalsIgnoreCase("pubDate")) {
+                            } else if (xmlPullParser.getName().equalsIgnoreCase("pubDate")) {
                                 if (insideItem) {
                                     // TODO time get wrong
-                                    String st = xpp.nextText();
+                                    String st = xmlPullParser.nextText();
+                                    System.out.println("?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????");
+
                                     item.date = dateFormat.parse(st);
+                                    System.out.println(item.date);
                                 }
                             }
                         }
-                        if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
+                        if (eventType == XmlPullParser.END_TAG && xmlPullParser.getName().equalsIgnoreCase("item")) {
                             MainActivity.items.add(item);
                             insideItem = false;
                             item = new Item();
                         }
-                        eventType = xpp.next();
+                        eventType = xmlPullParser.next();
                     }
                 }
             } catch (MalformedURLException e) {
