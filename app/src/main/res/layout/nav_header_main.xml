@@ -36,7 +36,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="swip to delate"
+        android:text="swip to delete"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="14sp"
         android:typeface="normal"
