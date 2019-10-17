@@ -1,18 +1,13 @@
 package com.gp19s2rss.rssreader;
 
-import android.app.ListActivity;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -24,37 +19,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
@@ -129,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showtypeURI() {
+    private void showTypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
         AlertDialog.Builder inputDialog =
                 new AlertDialog.Builder(MainActivity.this);
@@ -245,7 +228,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 // link collection
-                showtypeURI();
+                showTypeURI();
             }
         });
 
