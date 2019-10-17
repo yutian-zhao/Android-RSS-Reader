@@ -1,20 +1,14 @@
 package com.gp19s2rss.rssreader;
 
-import android.app.ListActivity;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,15 +18,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -46,21 +35,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Array;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
+/**
+ * <h1> MainActivity of APP </h1>
+ * This is default activity of this RSS application
+ *
+ * @version 1.0
+ * @since 2019-10-08th
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Uri rawUri;
+
     public static ArrayList<String> links = new ArrayList<>();
     public static ArrayList<String> fav = new ArrayList<>();
     public static ArrayList<String> list = new ArrayList<>();
@@ -71,10 +63,16 @@ public class MainActivity extends AppCompatActivity
     public static ItemAdapter itemAdapter;
     public static ListView listView;
     public static int flag = 0;
-    public static ArrayList<Item> linkItems= new ArrayList<>();
+    public static ArrayList<Item> linkItems = new ArrayList<>();
     public static SwipeMenuListView swipeView;
     public static ArrayAdapter adapter;
 
+    /**
+     * This method generates a array list of all user's links
+     *
+     * @param filename the file stores all links
+     * @return links array
+     */
     public ArrayList<String> loadLinks(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -91,6 +89,12 @@ public class MainActivity extends AppCompatActivity
         return links;
     }
 
+    /**
+     * This method generates a array list of  user's favorite links
+     *
+     * @param filename the file stores all favorite links
+     * @return favorite links array
+     */
     public ArrayList<String> loadfavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -107,6 +111,11 @@ public class MainActivity extends AppCompatActivity
         return fav;
     }
 
+    /**
+     * This method stores links to user's subscription
+     *
+     * @param filename position to save links
+     */
     public void saveLinks(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -118,6 +127,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * This method stores user's favorite links to favorite folder
+     *
+     * @param filename file to save favorite links
+     */
     public void savefavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -129,17 +143,37 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showtypeURI() {
+    /**
+     * This method checks if a uri contains RSS tag
+     *
+     * @param uri input URI want to subscribe
+     * @return whether uri has valid rss or not
+     */
+    public boolean valid_Rss(String uri) {
+        //check is xml
+        if (uri.contains(".xml")) return true;
+        if (uri.contains("/feed")) return true;
+        if (uri.contains("/rss")) return true;
+        return false;
+    }
+
+    /**
+     * This method generates a text box. Users can type Uri on it for subscribing.
+     * After receiving a Uri,the method makes initial judgement of the RSS Uri's validity.
+     * It gives feedback to users and deals with the Uri after judgement.
+     */
+    private void showTypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
         AlertDialog.Builder inputDialog =
                 new AlertDialog.Builder(MainActivity.this);
         inputDialog.setTitle("Type the source link you want to read.").setView(addWindow);
         inputDialog.setPositiveButton("Subscribe",
                 new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String uri_string = addWindow.getText().toString();
-                        if (pattern.matcher(uri_string).matches()) {
+                        if (pattern.matcher(uri_string).matches() && valid_Rss(uri_string)) {
                             // The input is a valid link.
                             rawUri = Uri.parse(uri_string);
                             if (!links.contains(rawUri.toString())) {
@@ -150,7 +184,6 @@ public class MainActivity extends AppCompatActivity
                                 saveLinks("links.ser");
                                 refresh();
                                 refreshSwipeView(links);
-                                Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
@@ -158,39 +191,17 @@ public class MainActivity extends AppCompatActivity
                             }
                         } else {
                             Toast.makeText(MainActivity.this,
-                                    "Invalid Uri.",
+                                    "Invalid Rss.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
     }
 
-    // memory(rss array on top, favourite link xml/ link class array output) - nav - refresh - list
-    // valid
-    // list
-    // show
-    // refresh
-    // folder (icon)
-
-    //?web user, browser/ scroll, load, auto sort/ notify/ UI
-
-    // rust server
-    // transfer parse html to rich text (viewer)
-
-    // (load)(icon)
-    // sort arraylist of link class time(old/ new) feed name (unread/recently read/favourite) search
-
-    // add - folder - refresh
-
-    //treat navigation drawer as listview(both clickable); setadapter throw null pointer exception; How to correctly implement BaseAdapter.notifyDataSetChanged() in Android; asynctask execute;
-    // asynctask notify; list view
-
-    // Reaction to the valid uri input.
-    protected void Valid_URI_Action(Uri uri) {
-        //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        //startActivity(intent);
-    }
-
+    /**
+     * Reload links from aimed file
+     * inorder to refresh all items on the list view
+     */
     public void refresh() {
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
@@ -199,6 +210,11 @@ public class MainActivity extends AppCompatActivity
         // not empty, sorted by time automatically
     }
 
+    /**
+     * This method controls the click listening
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -207,9 +223,14 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         context = getApplicationContext();
 
-        // To refresh the listview by click refresh
+        // To refresh the list view by click refresh
         FloatingActionButton refresh = findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
+            /**
+             * This method refreshes the application, if users
+             * click refresh button.
+             * @param v
+             */
             @Override
             public void onClick(View v) {
                 refresh();
@@ -224,20 +245,26 @@ public class MainActivity extends AppCompatActivity
         if (flag == 0) {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
             listView = findViewById(R.id.list_view);
-        }
-        else if (flag == 1){
+        } else if (flag == 1) {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, favItem);
             listView = findViewById(R.id.list_view);
-        }
-        else {
+        } else {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, linkItems);
             listView = findViewById(R.id.list_view);
         }
 
         listView.setAdapter(itemAdapter);
         final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+            /**
+             * This method judge the attribute of the items, and design where to store the Uri
+             * @param parent item's parent
+             * @param view   item's view
+             * @param position item's position
+             * @param id item's id
+             */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO delete?
                 //Uri targetUri = Uri.parse(links.get(position));
                 //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
                 //startActivity(intent);
@@ -245,7 +272,7 @@ public class MainActivity extends AppCompatActivity
                 if (flag == 0) {
                     url = items.get(position).link;
                     current_Item = items.get(position);
-                } else if (flag == 1){
+                } else if (flag == 1) {
                     url = favItem.get(position).link;
                     current_Item = favItem.get(position);
                 } else {
@@ -254,7 +281,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
                 intent.putExtra("link", url);
-//                intent.setClass(MainActivity.this, ReaderActivity.class);
                 startActivity(intent);
             }
         };
@@ -263,13 +289,21 @@ public class MainActivity extends AppCompatActivity
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When users click add button, show the text box for subscribing.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 // link collection
-                showtypeURI();
+                showTypeURI();
             }
         });
-
+        /**
+         * Following progress stores the valid Rss Uri,
+         * represents the Items in the main list viewer,
+         * and represents the Uri and favorite in the drawer list.
+         */
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -284,16 +318,16 @@ public class MainActivity extends AppCompatActivity
         links = loadLinks("links.ser");
         fav = loadfavs("favs.ser");
         //load my favs
-        for (int i = 0; i < fav.size(); i+=5) {
+        for (int i = 0; i < fav.size(); i += 5) {
             Item item = new Item();
             item.channel = fav.get(i);
-            item.link = fav.get(i+1);
-            item.description = fav.get(i+2);
-            item.title = fav.get(i+3);
+            item.link = fav.get(i + 1);
+            item.description = fav.get(i + 2);
+            item.title = fav.get(i + 3);
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
             try {
-                item.date = dateFormat.parse(fav.get(i+4));
-            }catch (Exception e) {
+                item.date = dateFormat.parse(fav.get(i + 4));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (!favItem.contains(item))
@@ -308,27 +342,29 @@ public class MainActivity extends AppCompatActivity
         list = new ArrayList<>();
         list.add("All");
         list.add("Favourite");
-        for (String s : links){
+        for (String s : links) {
             list.add(s);
         }
+        // TODO delete?
 //        refreshSwipeView(links);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
-        swipeView = (SwipeMenuListView) findViewById(R.id.swipeView);
+        swipeView = findViewById(R.id.swipeView);
         swipeView.setAdapter(adapter);
 //        refreshSwipeView(links);
         swipeView.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);
 
 
         SwipeMenuCreator creator = new SwipeMenuCreator() {
-
+            /**
+             * editing the drawer appearance and functions
+             * @param menu
+             */
             @Override
             public void create(SwipeMenu menu) {
                 // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(
-                        getApplicationContext());
+                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
                 // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204,
-                        113)));
+                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204, 113)));
                 // set item width
                 openItem.setWidth(170);
                 // set item title
@@ -337,11 +373,9 @@ public class MainActivity extends AppCompatActivity
                 menu.addMenuItem(openItem);
 
                 // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getApplicationContext());
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
                 // set item background
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                        0x3F, 0x25)));
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
                 // set item width
                 deleteItem.setWidth(170);
                 // set a icon
@@ -351,18 +385,26 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-// set creator
+        // set creator
         swipeView.setMenuCreator(creator);
         swipeView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            /**
+             * This method set the functions of "favorite" and "all" in the drawer list
+             *
+             * @param position
+             * @param menu
+             * @param index
+             * @return boolean to complete the click listening
+             */
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
                     case 0:
                         // open
-                        if (position == 0){
+                        if (position == 0) {
                             flag = 0;
                             refresh();
-                        } else if (position == 1){
+                        } else if (position == 1) {
                             flag = 1;
                             itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
                             listView.setAdapter(itemAdapter);
@@ -373,12 +415,11 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             flag = 2;
                             linkItems.clear();
-                            for (Item i : items){
-                                if (i.channel.equals(list.get(position))){
+                            for (Item i : items) {
+                                if (i.channel.equals(list.get(position))) {
                                     linkItems.add(i);
                                 }
                             }
-                            Log.d("qwert", linkItems.size() + " ");
                             itemAdapter = new ItemAdapter(context, R.layout.list_view_items, linkItems);
                             listView.setAdapter(itemAdapter);
 
@@ -387,8 +428,11 @@ public class MainActivity extends AppCompatActivity
                                     Toast.LENGTH_SHORT).show();
                         }
                         break;
+                    /**
+                     * The following progresses make final checking of the RSS Uri's validity.
+                     */
                     case 1:
-                        if (position == 0){
+                        if (position == 0) {
                             list.clear();
                             list.add("All");
                             list.add("Favourite");
@@ -397,11 +441,13 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
                             swipeView.setAdapter(MainActivity.adapter);
                             refresh();
-                        } else if (position == 1){
+                        } else if (position == 1) {
                             favItem = new ArrayList<>();
                             savefavs("favs.ser");
-                            MainActivity.itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-                            listView.setAdapter(MainActivity.itemAdapter);
+                            if (flag == 1) {
+                                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                                listView.setAdapter(itemAdapter);
+                            }
                         } else {
                             MainActivity.links.remove(list.get(position));
                             saveLinks("links.ser");
@@ -409,6 +455,9 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
                             MainActivity.swipeView.setAdapter(MainActivity.adapter);
                             refresh();
+                            flag = 0;
+                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                            listView.setAdapter(itemAdapter);
                         }
                         break;
                 }
@@ -419,11 +468,16 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void refreshSwipeView(ArrayList<String> input){
+    /**
+     * Adding the subscribed Uri, "favorite" and "ALL" to drawer list.
+     *
+     * @param input users' subscriptions
+     */
+    public void refreshSwipeView(ArrayList<String> input) {
         list = new ArrayList<>();
         list.add("All");
         list.add("Favourite");
-        for (String s : input){
+        for (String s : input) {
             list.add(s);
         }
 
@@ -432,13 +486,18 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void updateSwipeView(){
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
-        swipeView.setAdapter(adapter);
-    }
+    // TODO delete?
+//    public void updateSwipeView() {
+//        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+//        swipeView.setAdapter(adapter);
+//    }
 
-    public void sortByNew(ArrayList<Item> items){
-        // Sort all items by ordering date.
+    /**
+     * This method sorts the Items by Item.date with New order
+     *
+     * @param items items needed to sort
+     */
+    public void sortByNew(ArrayList<Item> items) {
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item i1, Item i2) {
@@ -453,8 +512,12 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void sortByOld(ArrayList<Item> items){
-        // Sort all items by ordering date.
+    /**
+     * This method sorts the Items by Item.date with Old order
+     *
+     * @param items items needed to sort
+     */
+    public void sortByOld(ArrayList<Item> items) {
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item i1, Item i2) {
@@ -469,16 +532,9 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
-
-//    public void deleteItem(int pos){
-////        ArrayList<Item> items = new ArrayList<>();
-////        for(int i=0 ; i<adapter.getCount() ; i++){
-////            if (i != pos){
-//                adapter.remove(adapter.getItem(pos));
-////            }
-////        }
-//    }
-
+    /**
+     * @return represent the context of this
+     */
     public static Context getAppContext() {
         return context;
     }
@@ -493,6 +549,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     *
+     * @param menu
+     * @return boolean to complete the click listening
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -500,6 +562,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Handle action bar item clicks here. The action bar will
+     * automatically handle clicks on the Home/Up button, so long
+     * as you specify a parent activity in AndroidManifest.xml.
+     *
+     * @param item
+     * @return super.onOptionsItemSelected(item);
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -533,7 +603,6 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
