@@ -30,6 +30,7 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 
     /**
      * This method will collect data from item and represent to users
+     *
      * @param position    item position
      * @param convertView item convert of view
      * @param parent      item parent

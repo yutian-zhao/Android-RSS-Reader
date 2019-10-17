@@ -19,6 +19,7 @@ import java.util.Comparator;
  * <h1>Fetch feeds information </h1>
  * This class will fetch all information of feeds from a RSS URI.
  * And refresh local storage document for updating.
+ *
  * @version 1.0
  * @since 2019-10-10th
  */
@@ -168,4 +169,3 @@ public class Fetch extends AsyncTask<String, Integer, String> {
         progressDialog.dismiss();
     }
 }
-

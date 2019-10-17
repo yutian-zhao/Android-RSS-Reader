@@ -23,6 +23,7 @@ public class Item {
 
     /**
      * this method will get channel from item
+     *
      * @return channel of the item
      */
     public String getChannel() {
@@ -31,6 +32,7 @@ public class Item {
 
     /**
      * this method will get title from item
+     *
      * @return title of the item
      */
     public String getTitle() {
@@ -39,6 +41,7 @@ public class Item {
 
     /**
      * this method will get link from item
+     *
      * @return link of the item
      */
     public String getLink() {
@@ -47,6 +50,7 @@ public class Item {
 
     /**
      * this method will get description from item
+     *
      * @return description of the item
      */
     public String getDescription() {
@@ -55,6 +59,7 @@ public class Item {
 
     /**
      * this method will get date from item
+     *
      * @return date of the item
      */
     public Date getDate() {

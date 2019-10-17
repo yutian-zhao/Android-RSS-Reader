@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,10 +23,12 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Uri rawUri;
+
     public static ArrayList<String> links = new ArrayList<>();
     public static ArrayList<String> fav = new ArrayList<>();
     public static ArrayList<String> list = new ArrayList<>();
@@ -54,10 +56,14 @@ public class MainActivity extends AppCompatActivity
     public static ItemAdapter itemAdapter;
     public static ListView listView;
     public static int flag = 0;
-    public static ArrayList<Item> linkItems= new ArrayList<>();
+    public static ArrayList<Item> linkItems = new ArrayList<>();
     public static SwipeMenuListView swipeView;
     public static ArrayAdapter adapter;
 
+    /**
+     * @param filename the file stores all links
+     * @return links array
+     */
     public ArrayList<String> loadLinks(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -74,6 +80,10 @@ public class MainActivity extends AppCompatActivity
         return links;
     }
 
+    /**
+     * @param filename the file stores all favorite links
+     * @return favorite links array
+     */
     public ArrayList<String> loadfavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -90,6 +100,9 @@ public class MainActivity extends AppCompatActivity
         return fav;
     }
 
+    /**
+     * @param filename position to save links
+     */
     public void saveLinks(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -101,6 +114,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * @param filename position to save favorite links
+     */
     public void savefavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -112,14 +128,21 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public boolean valid_Rss(String rss) {
+    /**
+     * @param uri input URI want to subscribe
+     * @return whether uri has valid rss or not
+     */
+    public boolean valid_Rss(String uri) {
         //check is xml
-        if (rss.contains(".xml")) return true;
-        if (rss.contains("/feed")) return true;
-        if (rss.contains("/rss")) return true;
+        if (uri.contains(".xml")) return true;
+        if (uri.contains("/feed")) return true;
+        if (uri.contains("/rss")) return true;
         return false;
     }
 
+    /**
+     *
+     */
     private void showTypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
         AlertDialog.Builder inputDialog =
@@ -155,6 +178,10 @@ public class MainActivity extends AppCompatActivity
                 }).show();
     }
 
+    /**
+     * reload links from aimed file
+     * inorder to refresh all items on list view
+     */
     public void refresh() {
         links = loadLinks("links.ser");
         Fetch fetchTask = new Fetch();
@@ -171,7 +198,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         context = getApplicationContext();
 
-        // To refresh the listview by click refresh
+        // To refresh the list view by click refresh
         FloatingActionButton refresh = findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,6 +227,7 @@ public class MainActivity extends AppCompatActivity
         final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // TODO delete?
                 //Uri targetUri = Uri.parse(links.get(position));
                 //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
                 //startActivity(intent);
@@ -272,9 +300,10 @@ public class MainActivity extends AppCompatActivity
         for (String s : links) {
             list.add(s);
         }
+        // TODO delete?
 //        refreshSwipeView(links);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
-        swipeView = (SwipeMenuListView) findViewById(R.id.swipeView);
+        swipeView = findViewById(R.id.swipeView);
         swipeView.setAdapter(adapter);
 //        refreshSwipeView(links);
         swipeView.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);
@@ -285,11 +314,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void create(SwipeMenu menu) {
                 // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(
-                        getApplicationContext());
+                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
                 // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204,
-                        113)));
+                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204, 113)));
                 // set item width
                 openItem.setWidth(170);
                 // set item title
@@ -298,11 +325,9 @@ public class MainActivity extends AppCompatActivity
                 menu.addMenuItem(openItem);
 
                 // create "delete" item
-                SwipeMenuItem deleteItem = new SwipeMenuItem(
-                        getApplicationContext());
+                SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
                 // set item background
-                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
-                        0x3F, 0x25)));
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
                 // set item width
                 deleteItem.setWidth(170);
                 // set a icon
@@ -312,7 +337,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
-// set creator
+        // set creator
         swipeView.setMenuCreator(creator);
         swipeView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
             @Override
@@ -397,11 +422,15 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    // TODO delete?
     public void updateSwipeView() {
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         swipeView.setAdapter(adapter);
     }
 
+    /**
+     * @param items items needed to sort
+     */
     public void sortByNew(ArrayList<Item> items) {
         // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
@@ -418,6 +447,9 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * @param items items needed to sort
+     */
     public void sortByOld(ArrayList<Item> items) {
         // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
@@ -434,6 +466,9 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * @return represent the context of this
+     */
     public static Context getAppContext() {
         return context;
     }
@@ -448,6 +483,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
