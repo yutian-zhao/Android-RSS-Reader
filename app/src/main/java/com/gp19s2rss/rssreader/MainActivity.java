@@ -306,8 +306,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        saveLinks("links.ser"); // clean
-        savefavs("favs.ser"); // clean
+//        saveLinks("links.ser"); // clean
+//        savefavs("favs.ser"); // clean
         links = loadLinks("links.ser");
         fav = loadfavs("favs.ser");
         //load my favs
