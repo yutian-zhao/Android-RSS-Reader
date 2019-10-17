@@ -165,26 +165,6 @@ public class MainActivity extends AppCompatActivity
                 }).show();
     }
 
-    // memory(rss array on top, favourite link xml/ link class array output) - nav - refresh - list
-    // valid
-    // list
-    // show
-    // refresh
-    // folder (icon)
-
-    //?web user, browser/ scroll, load, auto sort/ notify/ UI
-
-    // rust server
-    // transfer parse html to rich text (viewer)
-
-    // (load)(icon)
-    // sort arraylist of link class time(old/ new) feed name (unread/recently read/favourite) search
-
-    // add - folder - refresh
-
-    //treat navigation drawer as listview(both clickable); setadapter throw null pointer exception; How to correctly implement BaseAdapter.notifyDataSetChanged() in Android; asynctask execute;
-    // asynctask notify; list view
-
     // Reaction to the valid uri input.
     protected void Valid_URI_Action(Uri uri) {
         //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -254,7 +234,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 Intent intent = new Intent(getAppContext(), ReaderActivity.class);
                 intent.putExtra("link", url);
-//                intent.setClass(MainActivity.this, ReaderActivity.class);
                 startActivity(intent);
             }
         };
@@ -466,16 +445,6 @@ public class MainActivity extends AppCompatActivity
                 "Sort by old successfully.",
                 Toast.LENGTH_SHORT).show();
     }
-
-
-//    public void deleteItem(int pos){
-////        ArrayList<Item> items = new ArrayList<>();
-////        for(int i=0 ; i<adapter.getCount() ; i++){
-////            if (i != pos){
-//                adapter.remove(adapter.getItem(pos));
-////            }
-////        }
-//    }
 
     public static Context getAppContext() {
         return context;
