@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * <h1>Storage feeds information </h1>
- * This class-Item will storage main information of RSS feeds,
+ * This class-Item contains main information of RSS feeds,
  * including of channel, title, link,description and date;
  *
  * @version 1.0

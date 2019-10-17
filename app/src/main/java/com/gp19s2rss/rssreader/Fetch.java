@@ -20,7 +20,7 @@ import java.util.Comparator;
  * This class will fetch all information of feeds from a RSS URI.
  * And refresh local storage document for updating.
  * @version 1.0
- * @since 2019-10-08th
+ * @since 2019-10-10th
  */
 public class Fetch extends AsyncTask<String, Integer, String> {
 
@@ -39,8 +39,8 @@ public class Fetch extends AsyncTask<String, Integer, String> {
 
     /**
      * This method will fetch the feed information
-     * from the links witch are called by users.
-     * The feed's information will be storage in Item
+     * from the links which are called by users.
+     * The feed's information will be stored in Item
      * (title,date,description,link)
      * All important functions will be done during the progress.
      *
@@ -123,7 +123,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
             Collections.sort(MainActivity.items, new Comparator<Item>() {
                 /**
                  * this method will sort the items by date
-                 * @param i1 First item (Item storage feed information)
+                 * @param i1 First item (Item stores feed information)
                  * @param i2 Second item
                  * @return sorted items
                  */
@@ -138,7 +138,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
             Collections.sort(MainActivity.favItem, new Comparator<Item>() {
                 /**
                  * this method will sort the items by date
-                 * @param i1 First item (Item storage feed information)
+                 * @param i1 First item (Item stores feed information)
                  * @param i2 Second item
                  * @return sorted items
                  */
@@ -153,7 +153,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
             Collections.sort(MainActivity.linkItems, new Comparator<Item>() {
                 /**
                  * this method will sort the items by date
-                 * @param i1 First item (Item storage feed information)
+                 * @param i1 First item (Item stores feed information)
                  * @param i2 Second item
                  * @return sorted items
                  */

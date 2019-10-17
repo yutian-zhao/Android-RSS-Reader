@@ -10,20 +10,31 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+/**
+ * <h1>Show item in list-viewer </h1>
+ * This class can extract data from items,
+ * and show the information in list-viewer(id.layout.list_view_items)
+ *
+ * @version 1.0
+ * @since 2019-10-9th
+ */
 public class ItemAdapter extends ArrayAdapter<Item> {
 
-    ArrayList<Item> items = new ArrayList<>();
+    ArrayList<Item> items;
 
     public ItemAdapter(Context context, int textViewResourceId, ArrayList<Item> objects) {
         super(context, textViewResourceId, objects);
         items = objects;
     }
 
-    @Override
-    public int getCount() {
-        return super.getCount();
-    }
 
+    /**
+     * This method will collect data from item and represent to users
+     * @param position    item position
+     * @param convertView item convert of view
+     * @param parent      item parent
+     * @return convertView - the information represented on the list viewer
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

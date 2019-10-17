@@ -26,8 +26,6 @@ import static android.widget.Toast.*;
 
 public class ReaderActivity extends AppCompatActivity {
 
-    Uri rawUri;
-
     public void savefavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -86,7 +84,7 @@ public class ReaderActivity extends AppCompatActivity {
                     MainActivity.favItem.remove(MainActivity.current_Item);
                     //save
                     MainActivity.fav = new ArrayList<>();
-                    for (Item i : MainActivity.favItem){
+                    for (Item i : MainActivity.favItem) {
                         MainActivity.fav.add(i.channel);
                         MainActivity.fav.add(i.link);
                         MainActivity.fav.add(i.description);
@@ -105,12 +103,7 @@ public class ReaderActivity extends AppCompatActivity {
                     makeText(ReaderActivity.this, "This article is not in the favorite folder yet~~.", LENGTH_SHORT).show();
                 }
                 break;
-            // Unread operation
-            case R.id.id_unread_item:
-                makeText(ReaderActivity.this, "Mark as unread.", LENGTH_SHORT).show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+
         }
         return true;
     }
@@ -121,7 +114,7 @@ public class ReaderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reader);
 
-        WebView webView = (WebView) findViewById(R.id.webview);
+        WebView webView = findViewById(R.id.webview);
 
         // web view
         Intent intent = getIntent();
