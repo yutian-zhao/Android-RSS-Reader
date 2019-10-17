@@ -112,6 +112,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public boolean valid_Rss(String rss) {
+        //check is xml
+        if (rss.contains(".xml")) return true;
+        if (rss.contains("/feed")) return true;
+        if (rss.contains("/rss")) return true;
+        return false;
+    }
+
     private void showTypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
         AlertDialog.Builder inputDialog =
@@ -122,7 +130,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String uri_string = addWindow.getText().toString();
-                        if (pattern.matcher(uri_string).matches()) {
+                        if (pattern.matcher(uri_string).matches() && valid_Rss(uri_string)) {
                             // The input is a valid link.
                             rawUri = Uri.parse(uri_string);
                             if (!links.contains(rawUri.toString())) {
@@ -133,7 +141,6 @@ public class MainActivity extends AppCompatActivity
                                 saveLinks("links.ser");
                                 refresh();
                                 refreshSwipeView(links);
-                                Valid_URI_Action(rawUri);
                             } else {
                                 Toast.makeText(MainActivity.this,
                                         "Uri already exists.",
@@ -141,17 +148,11 @@ public class MainActivity extends AppCompatActivity
                             }
                         } else {
                             Toast.makeText(MainActivity.this,
-                                    "Invalid Uri.",
+                                    "Invalid Rss.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
-    }
-
-    // Reaction to the valid uri input.
-    protected void Valid_URI_Action(Uri uri) {
-        //Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        //startActivity(intent);
     }
 
     public void refresh() {
@@ -187,12 +188,10 @@ public class MainActivity extends AppCompatActivity
         if (flag == 0) {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, items);
             listView = findViewById(R.id.list_view);
-        }
-        else if (flag == 1){
+        } else if (flag == 1) {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, favItem);
             listView = findViewById(R.id.list_view);
-        }
-        else {
+        } else {
             itemAdapter = new ItemAdapter(this, R.layout.list_view_items, linkItems);
             listView = findViewById(R.id.list_view);
         }
@@ -208,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                 if (flag == 0) {
                     url = items.get(position).link;
                     current_Item = items.get(position);
-                } else if (flag == 1){
+                } else if (flag == 1) {
                     url = favItem.get(position).link;
                     current_Item = favItem.get(position);
                 } else {
@@ -246,16 +245,16 @@ public class MainActivity extends AppCompatActivity
         links = loadLinks("links.ser");
         fav = loadfavs("favs.ser");
         //load my favs
-        for (int i = 0; i < fav.size(); i+=5) {
+        for (int i = 0; i < fav.size(); i += 5) {
             Item item = new Item();
             item.channel = fav.get(i);
-            item.link = fav.get(i+1);
-            item.description = fav.get(i+2);
-            item.title = fav.get(i+3);
+            item.link = fav.get(i + 1);
+            item.description = fav.get(i + 2);
+            item.title = fav.get(i + 3);
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
             try {
-                item.date = dateFormat.parse(fav.get(i+4));
-            }catch (Exception e) {
+                item.date = dateFormat.parse(fav.get(i + 4));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             if (!favItem.contains(item))
@@ -270,7 +269,7 @@ public class MainActivity extends AppCompatActivity
         list = new ArrayList<>();
         list.add("All");
         list.add("Favourite");
-        for (String s : links){
+        for (String s : links) {
             list.add(s);
         }
 //        refreshSwipeView(links);
@@ -321,10 +320,10 @@ public class MainActivity extends AppCompatActivity
                 switch (index) {
                     case 0:
                         // open
-                        if (position == 0){
+                        if (position == 0) {
                             flag = 0;
                             refresh();
-                        } else if (position == 1){
+                        } else if (position == 1) {
                             flag = 1;
                             itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
                             listView.setAdapter(itemAdapter);
@@ -335,8 +334,8 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             flag = 2;
                             linkItems.clear();
-                            for (Item i : items){
-                                if (i.channel.equals(list.get(position))){
+                            for (Item i : items) {
+                                if (i.channel.equals(list.get(position))) {
                                     linkItems.add(i);
                                 }
                             }
@@ -350,7 +349,7 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                     case 1:
-                        if (position == 0){
+                        if (position == 0) {
                             list.clear();
                             list.add("All");
                             list.add("Favourite");
@@ -359,7 +358,7 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
                             swipeView.setAdapter(MainActivity.adapter);
                             refresh();
-                        } else if (position == 1){
+                        } else if (position == 1) {
                             favItem = new ArrayList<>();
                             savefavs("favs.ser");
                         } else {
@@ -379,11 +378,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void refreshSwipeView(ArrayList<String> input){
+    public void refreshSwipeView(ArrayList<String> input) {
         list = new ArrayList<>();
         list.add("All");
         list.add("Favourite");
-        for (String s : input){
+        for (String s : input) {
             list.add(s);
         }
 
@@ -392,12 +391,12 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void updateSwipeView(){
+    public void updateSwipeView() {
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         swipeView.setAdapter(adapter);
     }
 
-    public void sortByNew(ArrayList<Item> items){
+    public void sortByNew(ArrayList<Item> items) {
         // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
             @Override
@@ -413,7 +412,7 @@ public class MainActivity extends AppCompatActivity
                 Toast.LENGTH_SHORT).show();
     }
 
-    public void sortByOld(ArrayList<Item> items){
+    public void sortByOld(ArrayList<Item> items) {
         // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
             @Override
