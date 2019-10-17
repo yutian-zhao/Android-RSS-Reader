@@ -41,6 +41,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.regex.Pattern;
 
+/**
+ * <h1> MainActivity of APP </h1>
+ * This is default activity of this RSS application
+ *
+ * @version 1.0
+ * @since 2019-10-08th
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -61,6 +68,8 @@ public class MainActivity extends AppCompatActivity
     public static ArrayAdapter adapter;
 
     /**
+     * This method generates a array list of all user's links
+     *
      * @param filename the file stores all links
      * @return links array
      */
@@ -81,6 +90,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * This method generates a array list of  user's favorite links
+     *
      * @param filename the file stores all favorite links
      * @return favorite links array
      */
@@ -101,6 +112,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * This method stores links to user's subscription
+     *
      * @param filename position to save links
      */
     public void saveLinks(String filename) {
@@ -115,7 +128,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * @param filename position to save favorite links
+     * This method stores user's favorite links to favorite folder
+     *
+     * @param filename file to save favorite links
      */
     public void savefavs(String filename) {
         try {
@@ -129,6 +144,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * This method checks if a uri contains RSS tag
+     *
      * @param uri input URI want to subscribe
      * @return whether uri has valid rss or not
      */
@@ -141,7 +158,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     *
+     * This method generates a text box. Users can type Uri on it for subscribing.
+     * After receiving a Uri,the method makes initial judgement of the RSS Uri's validity.
+     * It gives feedback to users and deals with the Uri after judgement.
      */
     private void showTypeURI() {
         final EditText addWindow = new EditText(MainActivity.this);
@@ -150,6 +169,7 @@ public class MainActivity extends AppCompatActivity
         inputDialog.setTitle("Type the source link you want to read.").setView(addWindow);
         inputDialog.setPositiveButton("Subscribe",
                 new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String uri_string = addWindow.getText().toString();
@@ -179,8 +199,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * reload links from aimed file
-     * inorder to refresh all items on list view
+     * Reload links from aimed file
+     * inorder to refresh all items on the list view
      */
     public void refresh() {
         links = loadLinks("links.ser");
@@ -190,6 +210,11 @@ public class MainActivity extends AppCompatActivity
         // not empty, sorted by time automatically
     }
 
+    /**
+     * This method controls the click listening
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,6 +226,11 @@ public class MainActivity extends AppCompatActivity
         // To refresh the list view by click refresh
         FloatingActionButton refresh = findViewById(R.id.refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
+            /**
+             * This method refreshes the application, if users
+             * click refresh button.
+             * @param v
+             */
             @Override
             public void onClick(View v) {
                 refresh();
@@ -225,6 +255,13 @@ public class MainActivity extends AppCompatActivity
 
         listView.setAdapter(itemAdapter);
         final AdapterView.OnItemClickListener clickListener = new AdapterView.OnItemClickListener() {
+            /**
+             * This method judge the attribute of the items, and design where to store the Uri
+             * @param parent item's parent
+             * @param view   item's view
+             * @param position item's position
+             * @param id item's id
+             */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // TODO delete?
@@ -252,13 +289,21 @@ public class MainActivity extends AppCompatActivity
 
         FloatingActionButton add = findViewById(R.id.add);
         add.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When users click add button, show the text box for subscribing.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 // link collection
                 showTypeURI();
             }
         });
-
+        /**
+         * Following progress stores the valid Rss Uri,
+         * represents the Items in the main list viewer,
+         * and represents the Uri and favorite in the drawer list.
+         */
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -310,7 +355,10 @@ public class MainActivity extends AppCompatActivity
 
 
         SwipeMenuCreator creator = new SwipeMenuCreator() {
-
+            /**
+             * editing the drawer appearance and functions
+             * @param menu
+             */
             @Override
             public void create(SwipeMenu menu) {
                 // create "open" item
@@ -340,6 +388,14 @@ public class MainActivity extends AppCompatActivity
         // set creator
         swipeView.setMenuCreator(creator);
         swipeView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            /**
+             * This method set the functions of "favorite" and "all" in the drawer list
+             *
+             * @param position
+             * @param menu
+             * @param index
+             * @return boolean to complete the click listening
+             */
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
@@ -372,6 +428,9 @@ public class MainActivity extends AppCompatActivity
                                     Toast.LENGTH_SHORT).show();
                         }
                         break;
+                    /**
+                     * The following progresses make final checking of the RSS Uri's validity.
+                     */
                     case 1:
                         if (position == 0) {
                             list.clear();
@@ -409,6 +468,11 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Adding the subscribed Uri, "favorite" and "ALL" to drawer list.
+     *
+     * @param input users' subscriptions
+     */
     public void refreshSwipeView(ArrayList<String> input) {
         list = new ArrayList<>();
         list.add("All");
@@ -423,16 +487,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     // TODO delete?
-    public void updateSwipeView() {
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
-        swipeView.setAdapter(adapter);
-    }
+//    public void updateSwipeView() {
+//        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
+//        swipeView.setAdapter(adapter);
+//    }
 
     /**
+     * This method sorts the Items by Item.date with New order
+     *
      * @param items items needed to sort
      */
     public void sortByNew(ArrayList<Item> items) {
-        // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item i1, Item i2) {
@@ -448,10 +513,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * This method sorts the Items by Item.date with Old order
+     *
      * @param items items needed to sort
      */
     public void sortByOld(ArrayList<Item> items) {
-        // Sort all items by ordering date.
         Collections.sort(items, new Comparator<Item>() {
             @Override
             public int compare(Item i1, Item i2) {
@@ -487,7 +553,7 @@ public class MainActivity extends AppCompatActivity
      * Inflate the menu; this adds items to the action bar if it is present.
      *
      * @param menu
-     * @return
+     * @return boolean to complete the click listening
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -496,6 +562,14 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Handle action bar item clicks here. The action bar will
+     * automatically handle clicks on the Home/Up button, so long
+     * as you specify a parent activity in AndroidManifest.xml.
+     *
+     * @param item
+     * @return super.onOptionsItemSelected(item);
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -529,7 +603,6 @@ public class MainActivity extends AppCompatActivity
                 return true;
             }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
