@@ -339,7 +339,6 @@ public class MainActivity extends AppCompatActivity
                                     linkItems.add(i);
                                 }
                             }
-                            Log.d("qwert", linkItems.size() + " ");
                             itemAdapter = new ItemAdapter(context, R.layout.list_view_items, linkItems);
                             listView.setAdapter(itemAdapter);
 
@@ -361,6 +360,10 @@ public class MainActivity extends AppCompatActivity
                         } else if (position == 1) {
                             favItem = new ArrayList<>();
                             savefavs("favs.ser");
+                            if (flag == 1) {
+                                itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                                listView.setAdapter(itemAdapter);
+                            }
                         } else {
                             MainActivity.links.remove(list.get(position));
                             saveLinks("links.ser");
@@ -368,6 +371,9 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.adapter = new ArrayAdapter(context, android.R.layout.simple_list_item_1, list);
                             MainActivity.swipeView.setAdapter(MainActivity.adapter);
                             refresh();
+                            flag = 0;
+                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, items);
+                            listView.setAdapter(itemAdapter);
                         }
                         break;
                 }
