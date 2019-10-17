@@ -20,7 +20,7 @@ android {
 
 dependencies {
     // todo:following SDK will make 'com.android.support:appcompat-v7:27.1.1' error
-    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.facebook.android:facebook-android-sdk:[5,6)'
     // facebook sdk
     implementation files('libs/facebook-android-sdk-4.42.0.zip')
     //

@@ -19,14 +19,14 @@
         android:layout_height="51dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/ic_fav"
-        tools:srcCompat="@drawable/ic_fav" />
+        app:srcCompat="@mipmap/ic_rss"
+        tools:srcCompat="@mipmap/ic_rss" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Your Subscription"
+        android:text="Subscription"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -36,7 +36,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="swip to delate and open"
+        android:text="swip to delate"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="14sp"
         android:typeface="normal"

@@ -51,8 +51,6 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    Uri rawUri;
-
     public static ArrayList<String> links = new ArrayList<>();
     public static ArrayList<String> fav = new ArrayList<>();
     public static ArrayList<String> list = new ArrayList<>();
@@ -149,12 +147,11 @@ public class MainActivity extends AppCompatActivity
      * @param uri input URI want to subscribe
      * @return whether uri has valid rss or not
      */
-    public boolean valid_Rss(String uri) {
-        //check is xml
+    public boolean validateRss(String uri) {
         if (uri.contains(".xml")) return true;
         if (uri.contains("/feed")) return true;
         if (uri.contains("/rss")) return true;
-        return false;
+        return pattern.matcher(uri).matches();
     }
 
     /**
@@ -173,9 +170,9 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String uri_string = addWindow.getText().toString();
-                        if (pattern.matcher(uri_string).matches() && valid_Rss(uri_string)) {
+                        if (validateRss(uri_string)) {
                             // The input is a valid link.
-                            rawUri = Uri.parse(uri_string);
+                            Uri rawUri = Uri.parse(uri_string);
                             if (!links.contains(rawUri.toString())) {
                                 links.add(rawUri.toString());
                                 Toast.makeText(MainActivity.this,
@@ -264,10 +261,6 @@ public class MainActivity extends AppCompatActivity
              */
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO delete?
-                //Uri targetUri = Uri.parse(links.get(position));
-                //Intent intent = new Intent(Intent.ACTION_VIEW,targetUri);
-                //startActivity(intent);
                 String url;
                 if (flag == 0) {
                     url = items.get(position).link;
@@ -311,7 +304,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this); // press
+        navigationView.setNavigationItemSelectedListener(this);
 
         saveLinks("links.ser"); // clean
         savefavs("favs.ser"); // clean
@@ -345,13 +338,44 @@ public class MainActivity extends AppCompatActivity
         for (String s : links) {
             list.add(s);
         }
-        // TODO delete?
-//        refreshSwipeView(links);
+
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         swipeView = findViewById(R.id.swipeView);
         swipeView.setAdapter(adapter);
-//        refreshSwipeView(links);
         swipeView.setSwipeDirection(SwipeMenuListView.DIRECTION_RIGHT);
+
+        final AdapterView.OnItemClickListener swipeViewClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    flag = 0;
+                    refresh();
+                } else if (position == 1) {
+                    flag = 1;
+                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
+                    listView.setAdapter(itemAdapter);
+
+                    Toast.makeText(MainActivity.this,
+                            "Show the favourite folder",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    flag = 2;
+                    linkItems.clear();
+                    for (Item i : items) {
+                        if (i.channel.equals(list.get(position))) {
+                            linkItems.add(i);
+                        }
+                    }
+                    itemAdapter = new ItemAdapter(context, R.layout.list_view_items, linkItems);
+                    listView.setAdapter(itemAdapter);
+
+                    Toast.makeText(MainActivity.this,
+                            list.get(position),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        swipeView.setOnItemClickListener(swipeViewClickListener);
 
 
         SwipeMenuCreator creator = new SwipeMenuCreator() {
@@ -361,17 +385,6 @@ public class MainActivity extends AppCompatActivity
              */
             @Override
             public void create(SwipeMenu menu) {
-                // create "open" item
-                SwipeMenuItem openItem = new SwipeMenuItem(getApplicationContext());
-                // set item background
-                openItem.setBackground(new ColorDrawable(Color.rgb(46, 204, 113)));
-                // set item width
-                openItem.setWidth(170);
-                // set item title
-                openItem.setIcon(R.drawable.ic_action_open);
-                // add to menu
-                menu.addMenuItem(openItem);
-
                 // create "delete" item
                 SwipeMenuItem deleteItem = new SwipeMenuItem(getApplicationContext());
                 // set item background
@@ -399,39 +412,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
-                    case 0:
-                        // open
-                        if (position == 0) {
-                            flag = 0;
-                            refresh();
-                        } else if (position == 1) {
-                            flag = 1;
-                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, favItem);
-                            listView.setAdapter(itemAdapter);
-
-                            Toast.makeText(MainActivity.this,
-                                    "Show the favourite folder",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            flag = 2;
-                            linkItems.clear();
-                            for (Item i : items) {
-                                if (i.channel.equals(list.get(position))) {
-                                    linkItems.add(i);
-                                }
-                            }
-                            itemAdapter = new ItemAdapter(context, R.layout.list_view_items, linkItems);
-                            listView.setAdapter(itemAdapter);
-
-                            Toast.makeText(MainActivity.this,
-                                    list.get(position),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                        break;
                     /**
                      * The following progresses make final checking of the RSS Uri's validity.
                      */
-                    case 1:
+                    case 0:
                         if (position == 0) {
                             list.clear();
                             list.add("All");
@@ -486,11 +470,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    // TODO delete?
-//    public void updateSwipeView() {
-//        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
-//        swipeView.setAdapter(adapter);
-//    }
 
     /**
      * This method sorts the Items by Item.date with New order

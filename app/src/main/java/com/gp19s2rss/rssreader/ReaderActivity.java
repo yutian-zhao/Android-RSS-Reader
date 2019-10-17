@@ -13,6 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +31,9 @@ import static android.widget.Toast.*;
 
 public class ReaderActivity extends AppCompatActivity {
 
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
+
     public void savefavs(String filename) {
         try {
             File f = new File(getExternalFilesDir(null), filename);
@@ -38,26 +46,20 @@ public class ReaderActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.reader_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = getIntent();
+        String message =intent.getStringExtra("link");
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
                 return false;
             // Share operation
             case R.id.id_share_item:
-                String message = "Text I want to share.";
                 Intent share = new Intent(Intent.ACTION_SEND);
                 share.setType("text/plain");
                 share.putExtra(Intent.EXTRA_TEXT, message);
 
-                startActivity(Intent.createChooser(share, "Title of the dialog the system will open"));
+                startActivity(Intent.createChooser(share, "Apps you want to share to"));
                 makeText(ReaderActivity.this, "You share this article successfully.", LENGTH_SHORT).show();
                 break;
             // Favorite operation
@@ -103,6 +105,14 @@ public class ReaderActivity extends AppCompatActivity {
                     makeText(ReaderActivity.this, "This article is not in the favorite folder yet~~.", LENGTH_SHORT).show();
                 }
                 break;
+            // Facebook share
+            case R.id.id_FBshare_item:
+                ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(message))
+                    .build();
+                if (ShareDialog.canShow(ShareLinkContent.class)){
+                    shareDialog.show(linkContent);
+                }
 
         }
         return true;
@@ -112,11 +122,14 @@ public class ReaderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(this.getApplicationContext());
         setContentView(R.layout.activity_reader);
+
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
 
         WebView webView = findViewById(R.id.webview);
 
-        // web view
         Intent intent = getIntent();
         String info = intent.getStringExtra("link");
         webView.loadUrl(info);

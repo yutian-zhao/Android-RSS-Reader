@@ -2,18 +2,23 @@ package com.gp19s2rss.rssreader;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 
 /**
  * <h1>Fetch feeds information </h1>
@@ -24,19 +29,6 @@ import java.util.Comparator;
  * @since 2019-10-10th
  */
 public class Fetch extends AsyncTask<String, Integer, String> {
-
-    ProgressDialog progressDialog = new ProgressDialog(MainActivity.getAppContext());
-
-    /**
-     * It will show notice of "loading" when the activity build at background
-     */
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        progressDialog.setMessage("Loading");
-//        progressDialog.show(MainActivity.class);
-    }
-
 
     /**
      * This method will fetch the feed information
@@ -54,6 +46,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
         Item item = new Item();
         for (String link : links) {
             try {
+                if (valid_Rss(link)){
                 URL url = new URL(link);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 if (httpURLConnection.getResponseCode() == 200) {
@@ -97,7 +90,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
                         }
                         eventType = xpp.next();
                     }
-                }
+                }}
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -166,6 +159,40 @@ public class Fetch extends AsyncTask<String, Integer, String> {
             MainActivity.itemAdapter = new ItemAdapter(MainActivity.context, R.layout.list_view_items, MainActivity.linkItems);
             MainActivity.listView.setAdapter(MainActivity.itemAdapter);
         }
-        progressDialog.dismiss();
+    }
+
+    public static boolean valid_Rss(String uri) {
+        //Strictly check the validity of a rss feed. Slow.
+        try {
+            URL url = new URL("https://validator.w3.org/feed/check.cgi?url=".concat(uri));
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            if (httpURLConnection.getResponseCode() == 200) {
+                InputStream is = httpURLConnection.getInputStream();
+                Scanner s = new Scanner(is).useDelimiter("\\A");
+                String result = s.hasNext() ? s.next() : "";
+                return result.contains("Congratulations");
+            } else {
+                Toast.makeText(MainActivity.context,
+                        "Connection error.",
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        } catch (MalformedURLException e){
+            Toast.makeText(MainActivity.context,
+                    "Rss is invalid",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (IOException e){
+            Toast.makeText(MainActivity.context,
+                    "IOException",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        } catch (Exception e){
+            Toast.makeText(MainActivity.context,
+                    "Unknown Exception",
+                    Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            return false;
+        }
     }
 }
