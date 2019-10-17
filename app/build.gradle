@@ -21,8 +21,9 @@ android {
 dependencies {
     // todo:following SDK will make 'com.android.support:appcompat-v7:27.1.1' error
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    //
+    // facebook sdk
     implementation files('libs/facebook-android-sdk-4.42.0.zip')
+    //
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
