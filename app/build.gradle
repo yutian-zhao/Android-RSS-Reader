@@ -1,5 +1,8 @@
 apply plugin: 'com.android.application'
-
+/**
+ * reference of Facebook SDK: https://www.youtube.com/watch?v=2ZdzG_XObDM
+ * -- licence : CC BY-SA 4.0
+ */
 android {
     compileSdkVersion 27
     defaultConfig {

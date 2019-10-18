@@ -28,7 +28,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static android.widget.Toast.*;
-
+/**
+ * <h>the RSS reader activity <h/>
+ * Control the context and listening Click of the RSS reader
+ */
 public class ReaderActivity extends AppCompatActivity {
 
     CallbackManager callbackManager;

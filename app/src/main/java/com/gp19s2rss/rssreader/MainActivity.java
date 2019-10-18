@@ -47,6 +47,13 @@ import java.util.regex.Pattern;
  *
  * @version 1.0
  * @since 2019-10-08th
+ * Reference:
+ *  -basic learning : https://blog.csdn.net/
+ *     --licence  CC BY-SA 4.0
+ *  -Feed Validation Service: https://validator.w3.org/feed/
+ *     --licence  CC BY-SA 4.0
+ *  -SwipeView Package: https://github.com/baoyongzhang/SwipeMenuListView
+ *     --licence  CC BY-SA 4.0
  */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
