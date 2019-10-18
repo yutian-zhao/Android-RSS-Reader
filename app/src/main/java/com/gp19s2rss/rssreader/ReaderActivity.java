@@ -1,5 +1,3 @@
-// reference:https://blog.csdn.net/gh8609123/article/details/53495670
-// CC BY-SA 4.0
 
 package com.gp19s2rss.rssreader;
 
@@ -31,6 +29,12 @@ import static android.widget.Toast.*;
 /**
  * <h>the RSS reader activity <h/>
  * Control the context and listening Click of the RSS reader
+ * @version 1.0
+ * @since 2019-10-9th
+ *
+ * reference:
+ *    https://blog.csdn.net/gh8609123/article/details/53495670
+ *    --licence  CC BY-SA 4.0
  */
 public class ReaderActivity extends AppCompatActivity {
 
@@ -48,14 +52,24 @@ public class ReaderActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Inflate the menu; this adds items to the action bar if it is present.
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.reader_menu, menu);
         return true;
     }
 
-
+    /**
+     * Click listing of the right-top menu
+     * Deal with the favourite folder, when users options on favorite uri.
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = getIntent();
@@ -128,7 +142,10 @@ public class ReaderActivity extends AppCompatActivity {
         return true;
     }
 
-
+    /**
+     * Show a return button
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
