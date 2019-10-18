@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity
     public static ArrayList<Item> linkItems = new ArrayList<>();
     public static SwipeMenuListView swipeView;
     public static ArrayAdapter adapter;
+    // Using this Regular expression to check a string is a valid link or not.
+    public static Pattern pattern = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)" +
+            "(([A-Za-z0-9-~]+).)+" + "([A-Za-z0-9-~\\/])+$");
 
     /**
      * This method generates a array list of all user's links
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity
      * @param uri input URI want to subscribe
      * @return whether uri has valid rss or not
      */
-    public boolean validateRss(String uri) {
+    public static  boolean validateRss(String uri) {
         if (!pattern.matcher(uri).matches()) return false;
         if (uri.contains(".xml")) return true;
         if (uri.contains("/feed")) return true;
@@ -298,6 +301,23 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 // link collection
                 showTypeURI();
+            }
+        });
+
+        FloatingActionButton manual = findViewById(R.id.manual);
+        manual.setOnClickListener(new View.OnClickListener() {
+            /**
+             * When users click add button, show the text box for manual.
+             * @param view
+             */
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder inputDialog =
+                        new AlertDialog.Builder(MainActivity.this);
+                inputDialog.setTitle("Manual");
+                inputDialog.setMessage("Click add button to add new RSS feed.\n\nCLick top-right button to sort.\n\nClick refresh button to refresh.\n\nManage subscription in navigation slide.\n\nClick top-left button in reading page to share or mark as favourite.\n");
+                AlertDialog manual = inputDialog.create();
+                manual.show();
             }
         });
         /**
@@ -602,7 +622,4 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    // Using this Regular expression to check a string is a valid link or not.
-    Pattern pattern = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)" +
-            "(([A-Za-z0-9-~]+).)+" + "([A-Za-z0-9-~\\/])+$");
 }

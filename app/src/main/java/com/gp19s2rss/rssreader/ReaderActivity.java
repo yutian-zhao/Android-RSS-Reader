@@ -131,13 +131,13 @@ public class ReaderActivity extends AppCompatActivity {
                 }
                 break;
             // Facebook share
-//            case R.id.id_FBshare_item:
-//                ShareLinkContent linkContent = new ShareLinkContent.Builder()
-//                    .setContentUrl(Uri.parse(message))
-//                    .build();
-//                if (ShareDialog.canShow(ShareLinkContent.class)){
-//                    shareDialog.show(linkContent);
-//                }
+            case R.id.id_FBshare_item:
+                ShareLinkContent linkContent = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(message))
+                    .build();
+                if (ShareDialog.canShow(ShareLinkContent.class)){
+                    shareDialog.show(linkContent);
+                }
         }
         return true;
     }

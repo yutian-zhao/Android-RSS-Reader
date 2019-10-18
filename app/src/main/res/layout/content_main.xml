@@ -16,6 +16,16 @@
     </ListView>
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/manual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@+id/refresh"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@android:color/background_light"
+        app:srcCompat="@drawable/ic_manual" />
+
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

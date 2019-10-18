@@ -9,4 +9,7 @@
     <item
         android:id="@+id/id_share_item"
         android:title="share to others" />
+    <item
+        android:id="@+id/id_FBshare_item"
+        android:title="share to Facebook" />
 </menu>

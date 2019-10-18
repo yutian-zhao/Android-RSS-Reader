@@ -46,7 +46,7 @@ public class Fetch extends AsyncTask<String, Integer, String> {
         Item item = new Item();
         for (String link : links) {
             try {
-                if (true || valid_Rss(link)){
+                if (true){ // || valid_Rss(link)
                 URL url = new URL(link);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 if (httpURLConnection.getResponseCode() == 200) {
