@@ -155,10 +155,11 @@ public class MainActivity extends AppCompatActivity
      * @return whether uri has valid rss or not
      */
     public boolean validateRss(String uri) {
+        if (!pattern.matcher(uri).matches()) return false;
         if (uri.contains(".xml")) return true;
         if (uri.contains("/feed")) return true;
         if (uri.contains("/rss")) return true;
-        return pattern.matcher(uri).matches();
+        return false;
     }
 
     /**
